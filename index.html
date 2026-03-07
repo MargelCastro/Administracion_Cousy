@@ -74,22 +74,66 @@
   </main>
 
   <script>
-    function iniciarSesion() {
-      const usuario = document.getElementById("usuario").value.trim();
-      const clave = document.getElementById("clave").value.trim();
-      const estado = document.getElementById("estado");
+    async function iniciarSesion() {
 
-      if (!usuario || !clave) {
-        estado.className = "text-xs px-2 py-1 rounded-md border bg-red-900 text-red-400 border-red-700";
-        estado.textContent = "Completa usuario y contraseña.";
-        estado.classList.remove("hidden");
-        return;
-      }
+  const usuario = document.getElementById("usuario").value.trim();
+  const clave = document.getElementById("clave").value.trim();
+  const estado = document.getElementById("estado");
+
+  if (!usuario || !clave) {
+    estado.className = "text-xs px-2 py-1 rounded-md border bg-red-900 text-red-400 border-red-700";
+    estado.textContent = "Completa usuario y contraseña.";
+    estado.classList.remove("hidden");
+    return;
+  }
+
+  estado.className = "text-xs px-2 py-1 rounded-md border bg-slate-800 text-slate-300 border-slate-700";
+  estado.textContent = "Validando...";
+  estado.classList.remove("hidden");
+
+  try {
+
+    const response = await fetch("https://script.google.com/macros/s/AKfycby3pHX3ruR4_rRqSp_ieyF2qbhlRXY903xNZkvYqizge5ydLucdfcSZTGFZjJ8FtOowLA/exec", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        accion: "login",
+        usuario: usuario,
+        password: clave
+      })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
 
       estado.className = "text-xs px-2 py-1 rounded-md border bg-emerald-900 text-emerald-400 border-emerald-700";
-      estado.textContent = "Credenciales validadas. Continuando...";
-      estado.classList.remove("hidden");
+      estado.textContent = "Acceso correcto. Redirigiendo...";
+
+      sessionStorage.setItem("cousyUsuario", data.usuario);
+      sessionStorage.setItem("cousyRol", data.rol);
+
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 800);
+
+    } else {
+
+      estado.className = "text-xs px-2 py-1 rounded-md border bg-red-900 text-red-400 border-red-700";
+      estado.textContent = "Usuario o contraseña incorrectos.";
+
     }
+
+  } catch (error) {
+
+    estado.className = "text-xs px-2 py-1 rounded-md border bg-red-900 text-red-400 border-red-700";
+    estado.textContent = "Error de conexión con el servidor.";
+
+  }
+
+}
   </script>
 </body>
 </html>

@@ -133,6 +133,13 @@ body {
 </div>
 
 <script>
+// inicio de sesion en de login.html
+if (!sessionStorage.getItem("cousyUsuario")) {
+  window.location.href = "login.html";
+}
+// fin inicio de sesion en de login.html
+
+
 function openTab(tabId, buttonEl) {
   const contents = document.querySelectorAll('.tab-content');
   contents.forEach((content) => content.classList.add('hidden'));
