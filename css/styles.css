@@ -1,0 +1,142 @@
+body {
+  font-family: "Inter", sans-serif;
+}
+
+.theme-toggle-btn {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 50;
+}
+
+.nav-item {
+  cursor: pointer;
+}
+
+.nav-item-active {
+  background-color: rgb(6 78 59);
+  color: rgb(52 211 153);
+  border-color: rgb(16 185 129 / 0.5);
+}
+
+body.light-theme {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+body.light-theme .bg-slate-950 {
+  background-color: #f1f5f9 !important;
+}
+
+body.light-theme .bg-slate-900,
+body.light-theme .bg-slate-900\/90 {
+  background-color: #ffffff !important;
+}
+
+body.light-theme .bg-slate-800 {
+  background-color: #f8fafc !important;
+}
+
+body.light-theme .border-slate-800,
+body.light-theme .border-slate-700 {
+  border-color: #cbd5e1 !important;
+}
+
+body.light-theme .text-slate-200 {
+  color: #0f172a !important;
+}
+
+body.light-theme .text-slate-500 {
+  color: #475569 !important;
+}
+
+body.light-theme .text-slate-300 {
+  color: #334155 !important;
+}
+
+body.light-theme .nav-item-active {
+  background-color: #d1fae5 !important;
+  color: #065f46 !important;
+  border-color: #6ee7b7 !important;
+}
+
+body.light-theme input,
+body.light-theme select {
+  color: #0f172a !important;
+}
+
+body.light-theme input::placeholder {
+  color: #64748b !important;
+}
+
+body.light-theme .receta-status-ok {
+  background-color: #dcfce7 !important;
+  color: #14532d !important;
+  border-color: #16a34a !important;
+}
+
+body.light-theme .receta-status-error {
+  background-color: #fee2e2 !important;
+  color: #7f1d1d !important;
+  border-color: #dc2626 !important;
+}
+
+body:not(.light-theme) .receta-status-ok {
+  background-color: rgb(6 78 59 / 0.5) !important;
+  color: #bbf7d0 !important;
+  border-color: #15803d !important;
+}
+
+body:not(.light-theme) .receta-status-error {
+  background-color: rgb(127 29 29 / 0.5) !important;
+  color: #fecaca !important;
+  border-color: #b91c1c !important;
+}
+
+body.light-theme #recetaProductoContentTemplate + * .bg-black,
+body.light-theme .bg-black {
+  background-color: #000000 !important;
+}
+
+body.light-theme .receta-input {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.light-theme .receta-material-nombre {
+  color: #0f172a !important;
+}
+
+body.light-theme .receta-material-meta {
+  color: #334155 !important;
+}
+
+body.light-theme .receta-cantidad-real {
+  color: #0f766e !important;
+}
+
+body.light-theme .receta-hero,
+body.light-theme .producto-hero {
+  background: linear-gradient(90deg, #064e3b 0%, #0f172a 50%, #065f46 100%) !important;
+}
+
+body.light-theme .receta-metric,
+body.light-theme .producto-card,
+body.light-theme .producto-empty,
+body.light-theme .receta-table-head {
+  background-color: transparent;
+}
+
+body.light-theme .receta-metric {
+  background: linear-gradient(135deg, #064e3b 0%, #0f172a 100%) !important;
+}
+
+body.light-theme .receta-table-head {
+  background: linear-gradient(90deg, #064e3b 0%, #0f172a 50%, #064e3b 100%) !important;
+}
+
+body.light-theme .producto-card,
+body.light-theme .producto-empty {
+  background: linear-gradient(180deg, #0f172a 0%, #064e3b 100%) !important;
+}
