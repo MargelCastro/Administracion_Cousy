@@ -186,7 +186,7 @@ function renderMateriales(materiales) {
   contenedor.innerHTML = "";
 
   if (recetaState.materiales.length === 0) {
-    contenedor.innerHTML = '<tr><td colspan="4" class="px-3 py-8 text-center text-slate-500 sm:px-4 sm:py-10">No hay materias primas activas disponibles.</td></tr>';
+    contenedor.innerHTML = '<tr><td colspan="4" class="px-3 py-8 text-center text-slate-500 sm:px-4 sm:py-10 receta-table-message">No hay materias primas activas disponibles.</td></tr>';
     updateResumen();
     return;
   }
@@ -194,12 +194,12 @@ function renderMateriales(materiales) {
   recetaState.materiales.forEach((mat) => {
     const tr = document.createElement("tr");
     tr.setAttribute("data-material-row", mat.idMaterial || "");
-    tr.className = "align-middle";
+    tr.className = "align-middle receta-material-row";
     tr.innerHTML = `
-      <td class="px-3 py-3 align-top sm:px-4 sm:py-4">
+      <td class="px-3 py-3 align-top sm:px-4 sm:py-4 receta-material-cell" data-label="Materia Prima">
         <div class="break-words font-semibold leading-snug text-slate-200 receta-material-nombre">${mat.nombreMaterial || ""}</div>
       </td>
-      <td class="px-2 py-3 align-top sm:px-4 sm:py-4">
+      <td class="px-2 py-3 align-top sm:px-4 sm:py-4 receta-material-cell" data-label="Cantidad por unidad">
         <input
           type="number"
           step="0.001"
@@ -209,7 +209,7 @@ function renderMateriales(materiales) {
           data-id="${mat.idMaterial || ""}"
         >
       </td>
-      <td class="px-2 py-3 align-top sm:px-4 sm:py-4">
+      <td class="px-2 py-3 align-top sm:px-4 sm:py-4 receta-material-cell" data-label="% desperdicio">
         <div class="flex min-w-0 items-center gap-1 sm:gap-2">
           <input
             type="number"
@@ -222,7 +222,7 @@ function renderMateriales(materiales) {
           <span class="shrink-0 text-[11px] text-slate-500 sm:text-sm receta-material-meta">%</span>
         </div>
       </td>
-      <td class="px-2 py-3 align-top sm:px-4 sm:py-4">
+      <td class="px-2 py-3 align-top sm:px-4 sm:py-4 receta-material-cell" data-label="Cantidad total">
         <span class="cantidad-real block break-words text-[12px] font-bold text-emerald-400 sm:text-sm receta-cantidad-real">0</span>
       </td>
     `;
@@ -239,7 +239,7 @@ function renderMateriales(materiales) {
 async function cargarMaterialesReceta() {
   const contenedor = document.getElementById("listaMateriales");
   if (contenedor) {
-    contenedor.innerHTML = '<tr><td colspan="4" class="px-3 py-8 text-center text-slate-500 sm:px-4 sm:py-10">Cargando materiales...</td></tr>';
+    contenedor.innerHTML = '<tr><td colspan="4" class="px-3 py-8 text-center text-slate-500 sm:px-4 sm:py-10 receta-table-message">Cargando materiales...</td></tr>';
   }
 
   try {

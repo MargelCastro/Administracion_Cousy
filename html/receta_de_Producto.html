@@ -47,10 +47,10 @@
             </div>
           </div>
 
-          <div class="mt-6 overflow-hidden rounded-2xl border border-slate-800">
-            <div class="overflow-hidden">
-              <table class="min-w-full table-fixed text-[11px] sm:text-xs md:text-sm">
-                <thead>
+          <div class="mt-6 overflow-hidden rounded-2xl border border-slate-800 receta-materiales-table-shell">
+            <div class="overflow-hidden receta-materiales-table-wrap">
+              <table class="min-w-full table-fixed text-[11px] sm:text-xs md:text-sm receta-materiales-table">
+                <thead class="receta-materiales-head">
                   <tr class="border-b border-slate-700 bg-slate-800 text-left text-slate-300">
                     <th class="w-[28%] px-3 py-3 text-left sm:px-4 sm:py-4">Materia Prima</th>
                     <th class="w-[26%] px-2 py-3 text-left sm:px-4">Cantidad por unidad</th>
@@ -58,9 +58,9 @@
                     <th class="w-[22%] px-2 py-3 text-left sm:px-4">Cantidad total</th>
                   </tr>
                 </thead>
-                <tbody id="listaMateriales" class="bg-slate-900">
+                <tbody id="listaMateriales" class="bg-slate-900 receta-materiales-body">
                   <tr>
-                    <td colspan="4" class="px-4 py-10 text-center text-slate-500">Cargando materiales...</td>
+                    <td colspan="4" class="px-4 py-10 text-center text-slate-500 receta-table-message">Cargando materiales...</td>
                   </tr>
                 </tbody>
               </table>
