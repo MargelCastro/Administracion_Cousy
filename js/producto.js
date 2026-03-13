@@ -209,13 +209,13 @@ document.addEventListener("DOMContentLoaded", () => {
     headerSubtitle: "Consulta los productos creados con su imagen y composición registrada.",
     activeNavId: "productos",
     navItems: [
-      { id: "cotizaciones", label: "Cotizaciones", href: "../dashboard.html#cotizaciones" },
-      { id: "productos", label: "Productos", href: "Producto.html" },
-      { id: "materia-prima", label: "Materia Prima Actual", href: "materiaprima.html" },
-      { id: "clientes", label: "Clientes", href: "../dashboard.html#clientes" },
-      { id: "receta_producto", label: "Receta de Producto", href: "receta_de_Producto.html" },
-      { id: "prod_cotizacion", label: "Productos de Cotización", href: "../dashboard.html#prod_cotizacion" },
-      { id: "mp_cotizacion", label: "Materia Prima de Cotización", href: "../dashboard.html#mp_cotizacion" }
+      { id: "cotizaciones", label: "Cotizaciones", href: "/dashboard.html#cotizaciones" },
+      { id: "productos", label: "Productos", href: "/html/Producto.html" },
+      { id: "materia-prima", label: "Materia Prima Actual", href: "/html/materiaprima.html" },
+      { id: "clientes", label: "Clientes", href: "/dashboard.html#clientes" },
+      { id: "receta_producto", label: "Receta de Producto", href: "/html/receta_de_Producto.html" },
+      { id: "prod_cotizacion", label: "Productos de Cotización", href: "/dashboard.html#prod_cotizacion" },
+      { id: "mp_cotizacion", label: "Materia Prima de Cotización", href: "/dashboard.html#mp_cotizacion" }
     ],
     mainContentHtml: mainContentHtml,
     mainClass: "flex-1 p-4 md:p-8 overflow-y-auto space-y-4 md:space-y-6"

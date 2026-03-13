@@ -7,6 +7,7 @@
   function resolvePath(path) {
     if (!path) return "#";
     if (/^(https?:)?\/\//.test(path) || path.startsWith("#")) return path;
+    if (path.startsWith("/")) return path;
     const normalizedPath = path.replace(/^\.\//, "").replace(/^\//, "");
     return `${getRootPrefix()}${normalizedPath}`;
   }

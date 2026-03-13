@@ -366,13 +366,13 @@ function init() {
     headerSubtitle: "Ingreso y actualización de inventario de materiales.",
     activeNavId: "materia-prima",
     navItems: [
-      { id: "cotizaciones", label: "Cotizaciones", href: "../dashboard.html#cotizaciones" },
-      { id: "productos", label: "Productos", href: "Producto.html" },
-      { id: "materia-prima", label: "Materia Prima Actual", href: "materiaprima.html" },
-      { id: "clientes", label: "Clientes", href: "../dashboard.html#clientes" },
-      { id: "receta_producto", label: "Receta de Producto", href: "receta_de_Producto.html" },
-      { id: "prod_cotizacion", label: "Productos de Cotización", href: "../dashboard.html#prod_cotizacion" },
-      { id: "mp_cotizacion", label: "Materia Prima de Cotización", href: "../dashboard.html#mp_cotizacion" }
+      { id: "cotizaciones", label: "Cotizaciones", href: "/dashboard.html#cotizaciones" },
+      { id: "productos", label: "Productos", href: "/html/Producto.html" },
+      { id: "materia-prima", label: "Materia Prima Actual", href: "/html/materiaprima.html" },
+      { id: "clientes", label: "Clientes", href: "/dashboard.html#clientes" },
+      { id: "receta_producto", label: "Receta de Producto", href: "/html/receta_de_Producto.html" },
+      { id: "prod_cotizacion", label: "Productos de Cotización", href: "/dashboard.html#prod_cotizacion" },
+      { id: "mp_cotizacion", label: "Materia Prima de Cotización", href: "/dashboard.html#mp_cotizacion" }
     ],
     actions: [
       { id: "btnVerTabla", label: "Ver tabla materia prima" }

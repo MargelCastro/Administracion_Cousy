@@ -107,10 +107,10 @@ function renderCategorias() {
   contenedor.innerHTML = "";
   CATEGORIAS_PRODUCTO.forEach((categoria) => {
     const label = document.createElement("label");
-    label.className = "flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-900/60 px-3 py-2 text-sm text-slate-200";
+    label.className = "flex min-w-0 w-full cursor-pointer items-center justify-start gap-2 rounded-full border border-emerald-200 bg-white px-3 py-2.5 text-xs font-medium text-slate-700 transition hover:border-emerald-400 hover:bg-emerald-50 sm:gap-3 sm:px-4 sm:text-sm";
     label.innerHTML = `
-      <input type="checkbox" name="categoriaProducto" value="${categoria}" class="h-4 w-4 rounded border-slate-600 text-emerald-500 focus:ring-emerald-400">
-      <span>${categoria}</span>
+      <input type="checkbox" name="categoriaProducto" value="${categoria}" class="h-3.5 w-3.5 shrink-0 rounded-full border border-slate-300 text-emerald-500 focus:ring-emerald-400">
+      <span class="truncate">${categoria}</span>
     `;
     contenedor.appendChild(label);
   });
@@ -186,7 +186,7 @@ function renderMateriales(materiales) {
   contenedor.innerHTML = "";
 
   if (recetaState.materiales.length === 0) {
-    contenedor.innerHTML = '<tr><td colspan="7" class="px-4 py-10 text-center text-slate-500">No hay materias primas activas disponibles.</td></tr>';
+    contenedor.innerHTML = '<tr><td colspan="4" class="px-3 py-8 text-center text-slate-500 sm:px-4 sm:py-10">No hay materias primas activas disponibles.</td></tr>';
     updateResumen();
     return;
   }
@@ -196,37 +196,34 @@ function renderMateriales(materiales) {
     tr.setAttribute("data-material-row", mat.idMaterial || "");
     tr.className = "align-middle";
     tr.innerHTML = `
-      <td class="px-4 py-4 font-semibold text-emerald-400">${mat.idMaterial || ""}</td>
-      <td class="px-4 py-4">
-        <div class="font-semibold text-slate-100 receta-material-nombre">${mat.nombreMaterial || ""}</div>
+      <td class="px-3 py-3 align-top sm:px-4 sm:py-4">
+        <div class="break-words font-semibold leading-snug text-slate-900 receta-material-nombre">${mat.nombreMaterial || ""}</div>
       </td>
-      <td class="px-4 py-4 text-slate-300 receta-material-meta">${mat.unidadBase || "Sin unidad"}</td>
-      <td class="px-4 py-4 text-slate-300 receta-material-meta">${recetaFormatNumber(mat.stockActual || 0)}</td>
-      <td class="px-4 py-4">
+      <td class="px-2 py-3 align-top sm:px-4 sm:py-4">
         <input
           type="number"
           step="0.001"
           min="0"
           placeholder="0"
-          class="cant w-32 rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-right text-slate-100 outline-none focus:border-emerald-400 receta-input"
+          class="cant w-full min-w-0 rounded-2xl border border-slate-200 bg-slate-50 px-2 py-2 text-right text-[11px] text-slate-900 outline-none focus:border-emerald-400 sm:px-3 sm:text-sm receta-input"
           data-id="${mat.idMaterial || ""}"
         >
       </td>
-      <td class="px-4 py-4">
-        <div class="flex w-32 items-center gap-2">
+      <td class="px-2 py-3 align-top sm:px-4 sm:py-4">
+        <div class="flex min-w-0 items-center gap-1 sm:gap-2">
           <input
             type="number"
             step="0.01"
             min="0"
             value="0"
-            class="desp w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-right text-slate-100 outline-none focus:border-emerald-400 receta-input"
+            class="desp w-full min-w-0 rounded-2xl border border-slate-200 bg-slate-50 px-2 py-2 text-right text-[11px] text-slate-900 outline-none focus:border-emerald-400 sm:px-3 sm:text-sm receta-input"
             data-id="${mat.idMaterial || ""}"
           >
-          <span class="text-slate-400 receta-material-meta">%</span>
+          <span class="shrink-0 text-[11px] text-slate-500 sm:text-sm receta-material-meta">%</span>
         </div>
       </td>
-      <td class="px-4 py-4">
-        <span class="cantidad-real font-bold text-cyan-300 receta-cantidad-real">0</span>
+      <td class="px-2 py-3 align-top sm:px-4 sm:py-4">
+        <span class="cantidad-real block break-words text-[12px] font-bold text-emerald-600 sm:text-sm receta-cantidad-real">0</span>
       </td>
     `;
     contenedor.appendChild(tr);
@@ -242,7 +239,7 @@ function renderMateriales(materiales) {
 async function cargarMaterialesReceta() {
   const contenedor = document.getElementById("listaMateriales");
   if (contenedor) {
-    contenedor.innerHTML = '<tr><td colspan="7" class="px-4 py-10 text-center text-slate-500">Cargando materiales...</td></tr>';
+    contenedor.innerHTML = '<tr><td colspan="4" class="px-3 py-8 text-center text-slate-500 sm:px-4 sm:py-10">Cargando materiales...</td></tr>';
   }
 
   try {
@@ -382,13 +379,13 @@ document.addEventListener("DOMContentLoaded", () => {
     headerSubtitle: "Crea productos y registra su receta con materias primas activas.",
     activeNavId: "receta_producto",
     navItems: [
-      { id: "cotizaciones", label: "Cotizaciones", href: "../dashboard.html#cotizaciones" },
-      { id: "productos", label: "Productos", href: "Producto.html" },
-      { id: "materia-prima", label: "Materia Prima Actual", href: "materiaprima.html" },
-      { id: "clientes", label: "Clientes", href: "../dashboard.html#clientes" },
-      { id: "receta_producto", label: "Receta de Producto", href: "receta_de_Producto.html" },
-      { id: "prod_cotizacion", label: "Productos de Cotización", href: "../dashboard.html#prod_cotizacion" },
-      { id: "mp_cotizacion", label: "Materia Prima de Cotización", href: "../dashboard.html#mp_cotizacion" }
+      { id: "cotizaciones", label: "Cotizaciones", href: "/dashboard.html#cotizaciones" },
+      { id: "productos", label: "Productos", href: "/html/Producto.html" },
+      { id: "materia-prima", label: "Materia Prima Actual", href: "/html/materiaprima.html" },
+      { id: "clientes", label: "Clientes", href: "/dashboard.html#clientes" },
+      { id: "receta_producto", label: "Receta de Producto", href: "/html/receta_de_Producto.html" },
+      { id: "prod_cotizacion", label: "Productos de Cotización", href: "/dashboard.html#prod_cotizacion" },
+      { id: "mp_cotizacion", label: "Materia Prima de Cotización", href: "/dashboard.html#mp_cotizacion" }
     ],
     mainContentHtml: mainContentHtml,
     mainClass: "flex-1 p-4 md:p-8 overflow-y-auto space-y-4 md:space-y-6"
