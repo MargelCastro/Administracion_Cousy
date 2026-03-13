@@ -107,9 +107,9 @@ function renderCategorias() {
   contenedor.innerHTML = "";
   CATEGORIAS_PRODUCTO.forEach((categoria) => {
     const label = document.createElement("label");
-    label.className = "flex min-w-0 w-full cursor-pointer items-center justify-start gap-2 rounded-full border border-emerald-200 bg-white px-3 py-2.5 text-xs font-medium text-slate-700 transition hover:border-emerald-400 hover:bg-emerald-50 sm:gap-3 sm:px-4 sm:text-sm";
+    label.className = "categoria-chip flex min-w-0 w-full cursor-pointer items-center justify-start gap-2 rounded-full border border-slate-600 bg-slate-800 px-3 py-2.5 text-xs font-medium text-slate-200 transition sm:gap-3 sm:px-4 sm:text-sm";
     label.innerHTML = `
-      <input type="checkbox" name="categoriaProducto" value="${categoria}" class="h-3.5 w-3.5 shrink-0 rounded-full border border-slate-300 text-emerald-500 focus:ring-emerald-400">
+      <input type="checkbox" name="categoriaProducto" value="${categoria}" class="categoria-chip-input h-3.5 w-3.5 shrink-0 appearance-none rounded-full border border-slate-500 bg-slate-900 text-slate-400 focus:ring-emerald-400 checked:border-emerald-500 checked:bg-emerald-500">
       <span class="truncate">${categoria}</span>
     `;
     contenedor.appendChild(label);
@@ -197,7 +197,7 @@ function renderMateriales(materiales) {
     tr.className = "align-middle";
     tr.innerHTML = `
       <td class="px-3 py-3 align-top sm:px-4 sm:py-4">
-        <div class="break-words font-semibold leading-snug text-slate-900 receta-material-nombre">${mat.nombreMaterial || ""}</div>
+        <div class="break-words font-semibold leading-snug text-slate-200 receta-material-nombre">${mat.nombreMaterial || ""}</div>
       </td>
       <td class="px-2 py-3 align-top sm:px-4 sm:py-4">
         <input
@@ -205,7 +205,7 @@ function renderMateriales(materiales) {
           step="0.001"
           min="0"
           placeholder="0"
-          class="cant w-full min-w-0 rounded-2xl border border-slate-200 bg-slate-50 px-2 py-2 text-right text-[11px] text-slate-900 outline-none focus:border-emerald-400 sm:px-3 sm:text-sm receta-input"
+          class="cant w-full min-w-0 rounded-lg border border-slate-700 bg-slate-800 px-2 py-2 text-right text-[11px] text-slate-200 outline-none focus:ring-2 focus:ring-emerald-400 sm:px-3 sm:text-sm receta-input"
           data-id="${mat.idMaterial || ""}"
         >
       </td>
@@ -216,14 +216,14 @@ function renderMateriales(materiales) {
             step="0.01"
             min="0"
             value="0"
-            class="desp w-full min-w-0 rounded-2xl border border-slate-200 bg-slate-50 px-2 py-2 text-right text-[11px] text-slate-900 outline-none focus:border-emerald-400 sm:px-3 sm:text-sm receta-input"
+            class="desp w-full min-w-0 rounded-lg border border-slate-700 bg-slate-800 px-2 py-2 text-right text-[11px] text-slate-200 outline-none focus:ring-2 focus:ring-emerald-400 sm:px-3 sm:text-sm receta-input"
             data-id="${mat.idMaterial || ""}"
           >
           <span class="shrink-0 text-[11px] text-slate-500 sm:text-sm receta-material-meta">%</span>
         </div>
       </td>
       <td class="px-2 py-3 align-top sm:px-4 sm:py-4">
-        <span class="cantidad-real block break-words text-[12px] font-bold text-emerald-600 sm:text-sm receta-cantidad-real">0</span>
+        <span class="cantidad-real block break-words text-[12px] font-bold text-emerald-400 sm:text-sm receta-cantidad-real">0</span>
       </td>
     `;
     contenedor.appendChild(tr);

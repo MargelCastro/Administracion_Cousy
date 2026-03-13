@@ -24,6 +24,8 @@ function parseRequestParams(e) {
 function routeAction(params, callback) {
   const accion = params && params.accion ? String(params.accion) : "";
 
+  Logger.log("routeAction accion=%s params=%s", accion, JSON.stringify(params || {}));
+
   if (!accion) {
     return ResponseService.error("No se especificó ninguna acción.", 400, callback);
   }

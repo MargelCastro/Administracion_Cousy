@@ -140,3 +140,45 @@ body.light-theme .producto-card,
 body.light-theme .producto-empty {
   background: linear-gradient(180deg, #0f172a 0%, #064e3b 100%) !important;
 }
+
+.categoria-group {
+  background-color: #0f172a;
+  border-color: #334155;
+}
+
+.categoria-chip {
+  background-color: #1e293b;
+  color: #e2e8f0;
+  border-color: #475569;
+}
+
+.categoria-chip:hover {
+  background-color: #1e293b;
+}
+
+.categoria-chip-input {
+  background-color: #0f172a;
+  border-color: #64748b;
+  color: #94a3b8;
+}
+
+body.light-theme .categoria-group {
+  background-color: #ffffff !important;
+  border-color: rgb(52 211 153 / 0.6) !important;
+}
+
+body.light-theme .categoria-chip {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+  border-color: rgb(52 211 153 / 0.7) !important;
+}
+
+body.light-theme .categoria-chip:hover {
+  background-color: #ecfdf5 !important;
+}
+
+body.light-theme .categoria-chip-input {
+  background-color: #ffffff !important;
+  border-color: rgb(16 185 129 / 0.8) !important;
+  color: #10b981 !important;
+}

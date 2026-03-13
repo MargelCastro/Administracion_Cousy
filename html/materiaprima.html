@@ -29,6 +29,7 @@
                 <th class="py-2 pr-3">Nombre Material</th>
                 <th class="py-2 pr-3">Unidad Base</th>
                 <th class="py-2 pr-3">Stock Actual</th>
+                <th class="py-2 pr-3">Contenido / Unidad</th>
                 <th class="py-2 pr-3">Precio</th>
                 <th class="py-2 pr-3">Inversión Total</th>
                 <th class="py-2 pr-3">Activo</th>
@@ -65,12 +66,17 @@
           </div>
 
           <div class="space-y-2">
-            <label for="cantidadIngreso" class="text-sm text-slate-500">Cantidad a Ingresar</label>
+            <label for="cantidadIngreso" class="text-sm text-slate-500">Unidades compradas</label>
             <input id="cantidadIngreso" type="number" min="0" step="0.01" value="0" class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
           </div>
 
           <div class="space-y-2">
-            <label for="precio" class="text-sm text-slate-500">Precio</label>
+            <label for="contenidoUnidad" class="text-sm text-slate-500">Contenido por unidad</label>
+            <input id="contenidoUnidad" type="number" min="0.001" step="0.001" value="1" class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+          </div>
+
+          <div class="space-y-2">
+            <label for="precio" class="text-sm text-slate-500">Precio unidad comprada</label>
             <input id="precio" type="number" min="0" step="0.01" value="0" class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
           </div>
 
@@ -82,6 +88,23 @@
           <div class="space-y-2">
             <label for="activo" class="text-sm text-slate-500">Activo</label>
             <input id="activo" type="text" readonly value="FALSE" class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5" />
+          </div>
+
+          <div class="space-y-2 md:col-span-2 lg:col-span-3">
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div class="rounded-lg border border-slate-800 bg-slate-800 px-4 py-3">
+                <p class="text-xs uppercase tracking-[0.18em] text-slate-500">Stock a sumar</p>
+                <p id="stockASumar" class="mt-2 text-xl font-semibold text-emerald-400">0</p>
+              </div>
+              <div class="rounded-lg border border-slate-800 bg-slate-800 px-4 py-3">
+                <p class="text-xs uppercase tracking-[0.18em] text-slate-500">Stock proyectado</p>
+                <p id="stockProyectado" class="mt-2 text-xl font-semibold text-slate-200">0</p>
+              </div>
+              <div class="rounded-lg border border-slate-800 bg-slate-800 px-4 py-3">
+                <p class="text-xs uppercase tracking-[0.18em] text-slate-500">Calculo</p>
+                <p id="detalleCalculo" class="mt-2 text-sm font-medium text-slate-300">0 x 1 = 0</p>
+              </div>
+            </div>
           </div>
 
           <div class="md:col-span-2 lg:col-span-3 flex flex-wrap gap-2 pt-2">
