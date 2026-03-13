@@ -21,14 +21,6 @@ var MateriaPrimaService = {
     return Math.round((this._toNumber(value) + Number.EPSILON) * 100) / 100;
   },
 
-  _round4: function(value) {
-    return Math.round((this._toNumber(value) + Number.EPSILON) * 10000) / 10000;
-  },
-
-  _round3: function(value) {
-    return Math.round((this._toNumber(value) + Number.EPSILON) * 1000) / 1000;
-  },
-
   _boolFromCell: function(value) {
     if (value === true) return true;
     if (typeof value === "string") return value.toUpperCase() === "TRUE";
@@ -44,7 +36,7 @@ var MateriaPrimaService = {
   },
 
   _getHeaders: function(sheet) {
-    const lastColumn = Math.max(sheet.getLastColumn(), 8);
+    const lastColumn = Math.max(sheet.getLastColumn(), 7);
     const headerRow = sheet.getRange(1, 1, 1, lastColumn).getValues()[0];
     const map = {};
 
@@ -69,14 +61,13 @@ var MateriaPrimaService = {
   _getRows: function(sheet) {
     const lastRow = sheet.getLastRow();
     if (lastRow < 2) return [];
-    return sheet.getRange(2, 1, lastRow - 1, Math.max(sheet.getLastColumn(), 8)).getValues();
+    return sheet.getRange(2, 1, lastRow - 1, 7).getValues();
   },
 
   _rowToMaterial: function(rowValues, rowNumber, headerMap) {
     const stock = this._round2(this._columnValue(rowValues, headerMap, ["stock_actual", "stock actual"], 3));
-    const precio = this._round4(this._columnValue(rowValues, headerMap, ["precio"], 4));
+    const precio = this._round2(this._columnValue(rowValues, headerMap, ["precio"], 4));
     const inversion = this._round2(this._columnValue(rowValues, headerMap, ["inversión_total", "inversion_total", "inversión total", "inversion total"], 5));
-    const contenidoUnidad = this._round3(this._columnValue(rowValues, headerMap, ["contenido_unidad", "contenido unidad", "contenido_por_unidad", "contenido por unidad"], 7));
     return {
       rowNumber: rowNumber,
       idMaterial: this._columnValue(rowValues, headerMap, ["id_material", "id material"], 0) ? String(this._columnValue(rowValues, headerMap, ["id_material", "id material"], 0)).trim() : "",
@@ -85,8 +76,7 @@ var MateriaPrimaService = {
       stockActual: stock,
       precio: precio,
       inversionTotal: inversion,
-      activo: this._boolFromCell(this._columnValue(rowValues, headerMap, ["activo"], 6)),
-      contenidoUnidad: contenidoUnidad > 0 ? contenidoUnidad : 1
+      activo: this._boolFromCell(this._columnValue(rowValues, headerMap, ["activo"], 6))
     };
   },
 
@@ -190,8 +180,7 @@ var MateriaPrimaService = {
           stockActual: 0,
           precio: 0,
           inversionTotal: 0,
-          activo: false,
-          contenidoUnidad: 1
+          activo: false
         }
       }, callback);
     } catch (error) {
@@ -201,22 +190,10 @@ var MateriaPrimaService = {
 
   guardar: function(params, callback) {
     try {
-      Logger.log("MateriaPrima.guardar params raw: " + JSON.stringify(params || {}));
-
       const nombreMaterial = params && params.nombreMaterial ? String(params.nombreMaterial).trim() : "";
       const unidadBase = params && params.unidadBase ? String(params.unidadBase).trim() : "";
       const cantidadIngreso = this._round2(params ? params.cantidadIngreso : 0);
       const precioIngreso = this._round2(params ? params.precio : 0);
-      const contenidoUnidad = this._round4(params ? params.contenidoUnidad : 1);
-
-      Logger.log(
-        "MateriaPrima.guardar parsed => nombreMaterial=%s, unidadBase=%s, cantidadIngreso=%s, contenidoUnidad=%s, precioIngreso=%s",
-        nombreMaterial,
-        unidadBase,
-        cantidadIngreso,
-        contenidoUnidad,
-        precioIngreso
-      );
 
       if (!nombreMaterial) {
         return ResponseService.error("Nombre del material es requerido.", 400, callback);
@@ -234,10 +211,6 @@ var MateriaPrimaService = {
         return ResponseService.error("El precio no puede ser negativo.", 400, callback);
       }
 
-      if (contenidoUnidad <= 0) {
-        return ResponseService.error("Contenido por unidad debe ser mayor a cero.", 400, callback);
-      }
-
       const sheetResp = this._sheetOrError(callback);
       if (sheetResp.error) return sheetResp.error;
 
@@ -250,47 +223,22 @@ var MateriaPrimaService = {
       }
 
       const existente = this._findByName(materiales, nombreMaterial);
-      const stockAIngresar = this._round2(cantidadIngreso * contenidoUnidad);
-      const precioBaseIngreso = stockAIngresar > 0 ? this._round4(precioIngreso / contenidoUnidad) : 0;
-
-      Logger.log(
-        "MateriaPrima.guardar calculo => existente=%s, stockAnterior=%s, stockAIngresar=%s, precioBaseIngreso=%s",
-        existente ? existente.idMaterial : "NUEVO",
-        existente ? existente.stockActual : 0,
-        stockAIngresar,
-        precioBaseIngreso
-      );
 
       if (existente) {
-        const stockNuevo = this._round2(existente.stockActual + stockAIngresar);
-        const costoActual = this._round4(existente.precio);
-        const costoAcumuladoAnterior = this._round4(existente.stockActual * costoActual);
-        const costoAcumuladoNuevo = this._round4(stockAIngresar * precioBaseIngreso);
-        const precioNuevo = stockNuevo > 0
-          ? this._round4((costoAcumuladoAnterior + costoAcumuladoNuevo) / stockNuevo)
-          : 0;
+        const stockNuevo = this._round2(existente.stockActual + cantidadIngreso);
+        const precioNuevo = this._round2(precioIngreso);
         const inversionNueva = this._round2(stockNuevo * precioNuevo);
         const activo = stockNuevo > 0;
         const unidadFinal = existente.unidadBase || unidadBase;
-        const contenidoFinal = contenidoUnidad > 0 ? contenidoUnidad : (existente.contenidoUnidad || 1);
 
-        Logger.log(
-          "MateriaPrima.guardar update => id=%s, stockNuevo=%s, contenidoFinal=%s, unidadFinal=%s",
-          existente.idMaterial,
-          stockNuevo,
-          contenidoFinal,
-          unidadFinal
-        );
-
-        sheet.getRange(existente.rowNumber, 1, 1, 8).setValues([[
+        sheet.getRange(existente.rowNumber, 1, 1, 7).setValues([[
           existente.idMaterial,
           existente.nombreMaterial,
           unidadFinal,
           stockNuevo,
           precioNuevo,
           inversionNueva,
-          activo,
-          contenidoFinal
+          activo
         ]]);
 
         return ResponseService.success({
@@ -302,26 +250,17 @@ var MateriaPrimaService = {
             stockActual: stockNuevo,
             precio: precioNuevo,
             inversionTotal: inversionNueva,
-            activo: activo,
-            contenidoUnidad: contenidoFinal
+            activo: activo
           }
         }, callback);
       }
 
       const idNuevo = this._nextId(materiales);
-      const inversionInicial = this._round2(stockAIngresar * precioBaseIngreso);
-      const activoInicial = stockAIngresar > 0;
-
-      Logger.log(
-        "MateriaPrima.guardar create => id=%s, stockInicial=%s, contenidoUnidad=%s, unidadBase=%s",
-        idNuevo,
-        stockAIngresar,
-        contenidoUnidad,
-        unidadBase
-      );
+      const inversionInicial = this._round2(cantidadIngreso * precioIngreso);
+      const activoInicial = cantidadIngreso > 0;
 
       sheet.insertRowAfter(1);
-      const newRowRange = sheet.getRange(2, 1, 1, 8);
+      const newRowRange = sheet.getRange(2, 1, 1, 7);
       // Inserta en fila 2 con estilo limpio: sin color heredado y texto negro.
       newRowRange.clearFormat();
       newRowRange
@@ -332,11 +271,10 @@ var MateriaPrimaService = {
         idNuevo,
         nombreMaterial,
         unidadBase,
-        stockAIngresar,
-        precioBaseIngreso,
+        cantidadIngreso,
+        precioIngreso,
         inversionInicial,
-        activoInicial,
-        contenidoUnidad
+        activoInicial
       ]]);
 
       return ResponseService.success({
@@ -345,11 +283,10 @@ var MateriaPrimaService = {
           idMaterial: idNuevo,
           nombreMaterial: nombreMaterial,
           unidadBase: unidadBase,
-          stockActual: stockAIngresar,
-          precio: precioBaseIngreso,
+          stockActual: cantidadIngreso,
+          precio: precioIngreso,
           inversionTotal: inversionInicial,
-          activo: activoInicial,
-          contenidoUnidad: contenidoUnidad
+          activo: activoInicial
         }
       }, callback);
     } catch (error) {

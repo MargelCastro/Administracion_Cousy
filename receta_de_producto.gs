@@ -122,7 +122,7 @@ var RecetaProductoService = {
   },
 
   _getHeaderMap: function(sheet) {
-    const lastColumn = Math.max(sheet.getLastColumn(), 8);
+    const lastColumn = Math.max(sheet.getLastColumn(), 7);
     const headerRow = sheet.getRange(1, 1, 1, lastColumn).getValues()[0];
     const map = {};
 
@@ -215,7 +215,7 @@ var RecetaProductoService = {
     }
 
     const headerMap = this._getHeaderMap(sheet);
-    const rows = sheet.getRange(2, 1, lastRow - 1, Math.max(sheet.getLastColumn(), 8)).getValues();
+    const rows = sheet.getRange(2, 1, lastRow - 1, Math.max(sheet.getLastColumn(), 7)).getValues();
 
     for (var i = 0; i < rows.length; i++) {
       const row = rows[i];
@@ -229,8 +229,7 @@ var RecetaProductoService = {
         unidadBase: this._columnValue(row, headerMap, ["unidad_base", "unidad base"], 2) ? String(this._columnValue(row, headerMap, ["unidad_base", "unidad base"], 2)).trim() : "",
         precio: this._round3(this._columnValue(row, headerMap, ["precio"], 4)),
         stockActual: this._round3(this._columnValue(row, headerMap, ["stock_actual", "stock actual"], 3)),
-        activo: this._boolFromCell(this._columnValue(row, headerMap, ["activo"], 6)),
-        contenidoUnidad: this._round3(this._columnValue(row, headerMap, ["contenido_unidad", "contenido unidad", "contenido_por_unidad", "contenido por unidad"], 7)) || 1
+        activo: this._boolFromCell(this._columnValue(row, headerMap, ["activo"], 6))
       };
     }
 

@@ -23,11 +23,6 @@ function setFieldValue(id, value) {
   if (el) el.value = value;
 }
 
-function setTextValue(id, value) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = value;
-}
-
 function showEstado(type, message) {
   const estado = document.getElementById("estado");
   if (!estado) return;
@@ -117,8 +112,7 @@ function setMaterialFields(material) {
   setFieldValue("idMaterial", m.idMaterial || "");
   setFieldValue("unidadBase", m.unidadBase || "");
   setFieldValue("stockActual", formatNumber(m.stockActual || 0));
-  setFieldValue("contenidoUnidad", formatNumber(m.contenidoUnidad || 1));
-  setFieldValue("precio", "0");
+  setFieldValue("precio", formatNumber(m.precio || 0));
   setFieldValue("inversionTotal", formatNumber(m.inversionTotal || 0));
   setFieldValue("activo", m.activo ? "TRUE" : "FALSE");
 }
@@ -126,21 +120,12 @@ function setMaterialFields(material) {
 function actualizarResumenProyectado() {
   const stockActual = Number(document.getElementById("stockActual").value || 0);
   const cantidadIngreso = Number(document.getElementById("cantidadIngreso").value || 0);
-  const contenidoUnidad = Number(document.getElementById("contenidoUnidad").value || 0);
   const precio = Number(document.getElementById("precio").value || 0);
-  const stockAIngresar = (cantidadIngreso > 0 ? cantidadIngreso : 0) * (contenidoUnidad > 0 ? contenidoUnidad : 0);
-  const stockProyectado = stockActual + stockAIngresar;
-  const inversionBase = contenidoUnidad > 0 ? precio / contenidoUnidad : 0;
-  const inversion = stockProyectado * (inversionBase > 0 ? inversionBase : 0);
+  const stockProyectado = stockActual + (cantidadIngreso > 0 ? cantidadIngreso : 0);
+  const inversion = stockProyectado * (precio > 0 ? precio : 0);
 
   document.getElementById("inversionTotal").value = formatNumber(inversion);
   document.getElementById("activo").value = stockProyectado > 0 ? "TRUE" : "FALSE";
-  setTextValue("stockASumar", formatNumber(stockAIngresar));
-  setTextValue("stockProyectado", formatNumber(stockProyectado));
-  setTextValue(
-    "detalleCalculo",
-    `${formatNumber(cantidadIngreso)} x ${formatNumber(contenidoUnidad || 0)} = ${formatNumber(stockAIngresar)}`
-  );
 }
 
 function resetFormulario() {
@@ -150,13 +135,9 @@ function resetFormulario() {
   setFieldValue("unidadBase", "");
   setFieldValue("stockActual", "0");
   setFieldValue("cantidadIngreso", "0");
-  setFieldValue("contenidoUnidad", "1");
   setFieldValue("precio", "0");
   setFieldValue("inversionTotal", "0");
   setFieldValue("activo", "FALSE");
-  setTextValue("stockASumar", "0");
-  setTextValue("stockProyectado", "0");
-  setTextValue("detalleCalculo", "0 x 1 = 0");
   const datalist = document.getElementById("sugerenciasMateriales");
   if (datalist) datalist.innerHTML = "";
 }
@@ -170,8 +151,7 @@ async function cargarPreviewPorNombre() {
       stockActual: 0,
       precio: 0,
       inversionTotal: 0,
-      activo: false,
-      contenidoUnidad: 1
+      activo: false
     });
     return;
   }
@@ -235,7 +215,7 @@ function renderTabla(materiales) {
   if (!materiales || materiales.length === 0) {
     if (totalEl) totalEl.textContent = "Total: C$ 0";
     const tr = document.createElement("tr");
-    tr.innerHTML = '<td colspan="8" class="py-3 text-slate-500">No hay registros en Materia_Prima.</td>';
+    tr.innerHTML = '<td colspan="7" class="py-3 text-slate-500">No hay registros en Materia_Prima.</td>';
     tbody.appendChild(tr);
     return;
   }
@@ -250,7 +230,6 @@ function renderTabla(materiales) {
       <td class="py-2 pr-3">${m.nombreMaterial || ""}</td>
       <td class="py-2 pr-3">${m.unidadBase || ""}</td>
       <td class="py-2 pr-3">${formatNumber(m.stockActual || 0)}</td>
-      <td class="py-2 pr-3">${formatNumber(m.contenidoUnidad || 1)}</td>
       <td class="py-2 pr-3">${formatNumber(m.precio || 0)}</td>
       <td class="py-2 pr-3">${formatNumber(m.inversionTotal || 0)}</td>
       <td class="py-2 pr-3">${m.activo ? "TRUE" : "FALSE"}</td>
@@ -286,7 +265,6 @@ async function guardarMaterial(event) {
   const nombreMaterial = document.getElementById("nombreMaterial").value.trim();
   const unidadBase = document.getElementById("unidadBase").value;
   const cantidadIngreso = Number(document.getElementById("cantidadIngreso").value || 0);
-  const contenidoUnidad = Number(document.getElementById("contenidoUnidad").value || 0);
   const precio = Number(document.getElementById("precio").value || 0);
 
   if (!nombreMaterial) {
@@ -301,18 +279,12 @@ async function guardarMaterial(event) {
     showEstado("warn", "Cantidad y precio no pueden ser negativos.");
     return;
   }
-  if (contenidoUnidad <= 0) {
-    showEstado("warn", "Contenido por unidad debe ser mayor a cero.");
-    return;
-  }
-
   try {
     const data = await jsonpRequest({
       accion: "materiaPrimaGuardar",
       nombreMaterial: nombreMaterial,
       unidadBase: unidadBase,
       cantidadIngreso: String(cantidadIngreso),
-      contenidoUnidad: String(contenidoUnidad),
       precio: String(precio)
     });
 
@@ -341,13 +313,12 @@ async function guardarMaterial(event) {
 function bindEvents() {
   const nombreMaterial = document.getElementById("nombreMaterial");
   const cantidadIngreso = document.getElementById("cantidadIngreso");
-  const contenidoUnidad = document.getElementById("contenidoUnidad");
   const precio = document.getElementById("precio");
   const form = document.getElementById("formMateriaPrima");
   const btnVerTabla = document.getElementById("btnVerTabla");
   const btnRefrescarTabla = document.getElementById("btnRefrescarTabla");
 
-  if (!nombreMaterial || !cantidadIngreso || !contenidoUnidad || !precio || !form) {
+  if (!nombreMaterial || !cantidadIngreso || !precio || !form) {
     console.error("Materia Prima: faltan elementos requeridos del formulario.");
     return;
   }
@@ -362,7 +333,6 @@ function bindEvents() {
 
   nombreMaterial.addEventListener("change", cargarPreviewPorNombre);
   cantidadIngreso.addEventListener("input", actualizarResumenProyectado);
-  contenidoUnidad.addEventListener("input", actualizarResumenProyectado);
   precio.addEventListener("input", actualizarResumenProyectado);
   form.addEventListener("submit", guardarMaterial);
 
