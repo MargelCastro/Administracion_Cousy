@@ -30,8 +30,24 @@ var RecetaProductoController = {
 
 var RecetaProductoService = {
   MATERIALES_SHEET: "Materia_Prima",
-  RECETA_SHEET: "Receta_de_Producto",
-  PRODUCTOS_SHEET: "Producto",
+  RECETA_SHEET_NAMES: ["Receta_de_Producto", "Receta de Producto"],
+  PRODUCTOS_SHEET_NAMES: ["Productos", "Producto"],
+  RECETA_HEADERS: [
+    "ID_Producto",
+    "ID_Material",
+    "Cantidad_Por_Unidad",
+    "Porcentaje_Desperdicio",
+    "Cantidad_Total"
+  ],
+  PRODUCTO_HEADERS: [
+    "ID_Producto",
+    "Nombre_Producto",
+    "Categoria",
+    "Total_Materiales",
+    "URL de Imagen",
+    "Fecha_Creacion",
+    "Estado"
+  ],
 
   _toNumber: function(value) {
     if (value === null || value === undefined || value === "") return 0;
@@ -85,6 +101,23 @@ var RecetaProductoService = {
     return { sheet: sheetResp.sheet };
   },
 
+  _sheetByAliasesOrError: function(sheetNames, callback) {
+    const ss = SheetService.getSpreadsheet();
+    if (!ss) {
+      return { error: ResponseService.error("No se pudo acceder al documento base de Google Sheets.", 500, callback) };
+    }
+
+    for (var i = 0; i < sheetNames.length; i++) {
+      const name = sheetNames[i];
+      const sheet = ss.getSheetByName(name);
+      if (sheet) {
+        return { sheet: sheet };
+      }
+    }
+
+    return { error: ResponseService.error("No se encontró ninguna hoja válida: " + sheetNames.join(", "), 500, callback) };
+  },
+
   _ensureSheet: function(sheetName, headers) {
     const ss = SheetService.getSpreadsheet();
     if (!ss) {
@@ -104,6 +137,47 @@ var RecetaProductoService = {
     if (!requiresHeaders) {
       for (var i = 0; i < headers.length; i++) {
         if (String(currentHeaders[i] || "").trim() !== headers[i]) {
+          requiresHeaders = true;
+          break;
+        }
+      }
+    }
+
+    if (requiresHeaders) {
+      sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+      sheet.getRange(1, 1, 1, headers.length)
+        .setFontWeight("bold")
+        .setBackground("#0f3d6e")
+        .setFontColor("#ffffff");
+    }
+
+    return sheet;
+  },
+
+  _ensureSheetByAliases: function(sheetNames, headers) {
+    const ss = SheetService.getSpreadsheet();
+    if (!ss) {
+      throw new Error("No se pudo acceder al documento base de Google Sheets.");
+    }
+
+    let sheet = null;
+    for (var i = 0; i < sheetNames.length; i++) {
+      sheet = ss.getSheetByName(sheetNames[i]);
+      if (sheet) break;
+    }
+
+    if (!sheet) {
+      sheet = ss.insertSheet(sheetNames[0]);
+    }
+
+    const currentHeaders = sheet.getLastColumn() > 0
+      ? sheet.getRange(1, 1, 1, headers.length).getValues()[0]
+      : [];
+    let requiresHeaders = currentHeaders.length < headers.length;
+
+    if (!requiresHeaders) {
+      for (var j = 0; j < headers.length; j++) {
+        if (String(currentHeaders[j] || "").trim() !== headers[j]) {
           requiresHeaders = true;
           break;
         }
@@ -153,6 +227,10 @@ var RecetaProductoService = {
       .toUpperCase();
   },
 
+  _isHiloMaterial: function(nombreMaterial) {
+    return /HILO/i.test(String(nombreMaterial || ""));
+  },
+
   _buildProductPrefix: function(nombreProducto) {
     const normalized = this._normalizeText(nombreProducto).replace(/[^A-Z0-9 ]/g, " ");
     const words = normalized.split(/\s+/).filter(function(part) {
@@ -194,6 +272,47 @@ var RecetaProductoService = {
     }
 
     return prefix + "-" + String(max + 1).padStart(3, "0");
+  },
+
+  _buildDetalleRecetaRow: function(productoId, materialBase, item) {
+    const idMaterial = item && item.idMaterial ? String(item.idMaterial).trim() : "";
+    const cantidadPorUnidad = this._round3(item ? item.cantidadPorUnidad : 0);
+    const esHilo = this._isHiloMaterial(materialBase ? materialBase.nombreMaterial : "");
+    const porcentajeDesperdicio = esHilo ? 0 : this._round3(item ? item.porcentajeDesperdicio : 0);
+    const cantidadTotal = esHilo
+      ? cantidadPorUnidad
+      : this._round3(cantidadPorUnidad * (1 + (porcentajeDesperdicio / 100)));
+
+    return {
+      idMaterial: idMaterial,
+      cantidadPorUnidad: cantidadPorUnidad,
+      porcentajeDesperdicio: porcentajeDesperdicio,
+      cantidadTotal: cantidadTotal,
+      row: [
+        productoId,
+        idMaterial,
+        cantidadPorUnidad,
+        porcentajeDesperdicio,
+        cantidadTotal
+      ]
+    };
+  },
+
+  _appendProductoRow: function(sheet, data) {
+    sheet.getRange(sheet.getLastRow() + 1, 1, 1, this.PRODUCTO_HEADERS.length).setValues([[
+      data.idProducto,
+      data.nombreProducto,
+      data.categoria,
+      data.totalMateriales,
+      data.urlImagen,
+      data.fechaCreacion,
+      data.estado
+    ]]);
+  },
+
+  _appendRecetaRows: function(sheet, rows) {
+    if (!rows || rows.length === 0) return;
+    sheet.getRange(sheet.getLastRow() + 1, 1, rows.length, this.RECETA_HEADERS.length).setValues(rows);
   },
 
   _boolFromCell: function(value) {
@@ -285,22 +404,8 @@ var RecetaProductoService = {
       if (materialesMapResp.error) return materialesMapResp.error;
 
       const materialesMap = materialesMapResp.map;
-      const recetaSheet = this._ensureSheet(this.RECETA_SHEET, [
-        "ID_Producto",
-        "ID_Material",
-        "Cantidad_Por_Unidad",
-        "Porcentaje_Desperdicio",
-        "Cantidad_Real"
-      ]);
-      const productosSheet = this._ensureSheet(this.PRODUCTOS_SHEET, [
-        "ID_Producto",
-        "Nombre_Producto",
-        "Categoria",
-        "Estado",
-        "Fecha_Creacion",
-        "Imagen",
-        "Total_Materiales"
-      ]);
+      const recetaSheet = this._ensureSheetByAliases(this.RECETA_SHEET_NAMES, this.RECETA_HEADERS);
+      const productosSheet = this._ensureSheetByAliases(this.PRODUCTOS_SHEET_NAMES, this.PRODUCTO_HEADERS);
 
       const productoId = this._nextProductId(productosSheet, nombreProducto);
       const fecha = new Date();
@@ -310,7 +415,6 @@ var RecetaProductoService = {
         const item = materiales[i];
         const idMaterial = item && item.idMaterial ? String(item.idMaterial).trim() : "";
         const cantidad = this._round3(item ? item.cantidadPorUnidad : 0);
-        const desperdicio = this._round3(item ? item.porcentajeDesperdicio : 0);
 
         if (!idMaterial || cantidad <= 0) continue;
 
@@ -319,30 +423,24 @@ var RecetaProductoService = {
           return ResponseService.error("No se encontró el material con ID: " + idMaterial, 400, callback);
         }
 
-        const cantidadReal = this._round3(cantidad * (1 + (desperdicio / 100)));
-        recipeRows.push([
-          productoId,
-          idMaterial,
-          cantidad,
-          desperdicio / 100,
-          cantidadReal
-        ]);
+        const detalle = this._buildDetalleRecetaRow(productoId, materialBase, item);
+        recipeRows.push(detalle.row);
       }
 
       if (recipeRows.length === 0) {
         return ResponseService.error("Debes ingresar al menos un material válido.", 400, callback);
       }
 
-      recetaSheet.getRange(recetaSheet.getLastRow() + 1, 1, recipeRows.length, recipeRows[0].length).setValues(recipeRows);
-      productosSheet.getRange(productosSheet.getLastRow() + 1, 1, 1, 7).setValues([[
-        productoId,
-        nombreProducto,
-        categorias.join(", "),
-        "Activo",
-        fecha,
-        urlImagen,
-        recipeRows.length
-      ]]);
+      this._appendRecetaRows(recetaSheet, recipeRows);
+      this._appendProductoRow(productosSheet, {
+        idProducto: productoId,
+        nombreProducto: nombreProducto,
+        categoria: categorias.join(", "),
+        totalMateriales: recipeRows.length,
+        urlImagen: urlImagen,
+        fechaCreacion: fecha,
+        estado: "Activo"
+      });
 
       return ResponseService.success({
         message: "Receta y producto guardados correctamente.",
@@ -356,7 +454,7 @@ var RecetaProductoService = {
 
   listarProductos: function(callback) {
     try {
-      const sheetResp = this._sheetOrError(this.PRODUCTOS_SHEET, callback);
+      const sheetResp = this._sheetByAliasesOrError(this.PRODUCTOS_SHEET_NAMES, callback);
       if (sheetResp.error) return sheetResp.error;
 
       const sheet = sheetResp.sheet;
@@ -383,10 +481,10 @@ var RecetaProductoService = {
           }).filter(function(item) {
             return !!item;
           }) : [],
-          estado: this._columnValue(row, headerMap, ["estado"], 3) ? String(this._columnValue(row, headerMap, ["estado"], 3)).trim() : "",
-          fechaCreacion: this._columnValue(row, headerMap, ["fecha_creacion", "fecha creacion"], 4),
-          imagen: this._columnValue(row, headerMap, ["imagen"], 5) ? String(this._columnValue(row, headerMap, ["imagen"], 5)).trim() : "",
-          totalMateriales: this._toNumber(this._columnValue(row, headerMap, ["total_materiales", "total materiales"], 6))
+          totalMateriales: this._toNumber(this._columnValue(row, headerMap, ["total_materiales", "total materiales"], 3)),
+          imagen: this._columnValue(row, headerMap, ["url de imagen", "url_de_imagen", "imagen"], 4) ? String(this._columnValue(row, headerMap, ["url de imagen", "url_de_imagen", "imagen"], 4)).trim() : "",
+          fechaCreacion: this._columnValue(row, headerMap, ["fecha_creacion", "fecha creacion"], 5),
+          estado: this._columnValue(row, headerMap, ["estado"], 6) ? String(this._columnValue(row, headerMap, ["estado"], 6)).trim() : ""
         });
       }
 
