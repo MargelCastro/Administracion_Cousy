@@ -278,6 +278,12 @@ body.light-theme .categoria-chip-input {
     align-items: start;
   }
 
+  .receta-material-nombre {
+    font-size: 0.90rem;
+    font-weight: 700;
+    color: #10b981;
+  }
+
   .receta-material-cell input,
   .receta-material-cell .cantidad-real,
   .receta-material-cell > div {
@@ -301,4 +307,10 @@ body.light-theme .receta-material-row + .receta-material-row td {
 
 body.light-theme .receta-material-cell::before {
   color: #475569;
+}
+
+@media (max-width: 767px) {
+  body.light-theme .receta-material-nombre {
+    color: #059669 !important;
+  }
 }

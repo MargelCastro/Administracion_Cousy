@@ -70,6 +70,10 @@ function recetaFormatNumber(value, decimals = 3) {
   });
 }
 
+function isHiloMaterial(nombreMaterial) {
+  return /hilo/i.test(String(nombreMaterial || ""));
+}
+
 function normalizeProductPrefix(name) {
   const normalized = (name || "")
     .trim()
@@ -154,27 +158,24 @@ function calculateCantidadReal(cantidad, desperdicio) {
 function updateResumen() {
   const rows = document.querySelectorAll("[data-material-row]");
   let materialesActivos = 0;
-  let cantidadRealTotal = 0;
 
   rows.forEach((row) => {
     const cantidadInput = row.querySelector(".cant");
     const desperdicioInput = row.querySelector(".desp");
     const totalEl = row.querySelector(".cantidad-real");
+    const isHilo = row.getAttribute("data-material-type") === "hilo";
     const cantidad = Number(cantidadInput ? cantidadInput.value : 0);
-    const desperdicio = Number(desperdicioInput ? desperdicioInput.value : 0);
-    const cantidadReal = calculateCantidadReal(cantidad, desperdicio);
+    const desperdicio = isHilo ? 0 : Number(desperdicioInput ? desperdicioInput.value : 0);
+    const cantidadReal = isHilo ? cantidad : calculateCantidadReal(cantidad, desperdicio);
 
     if (totalEl) totalEl.textContent = recetaFormatNumber(cantidadReal);
     if (cantidad > 0) {
       materialesActivos += 1;
-      cantidadRealTotal += cantidadReal;
     }
   });
 
   const materialesEl = document.getElementById("resumenMateriales");
-  const cantidadRealEl = document.getElementById("resumenCantidadReal");
   if (materialesEl) materialesEl.textContent = recetaFormatNumber(materialesActivos, 0);
-  if (cantidadRealEl) cantidadRealEl.textContent = recetaFormatNumber(cantidadRealTotal);
 }
 
 function renderMateriales(materiales) {
@@ -192,10 +193,31 @@ function renderMateriales(materiales) {
   }
 
   recetaState.materiales.forEach((mat) => {
+    const hiloMaterial = isHiloMaterial(mat.nombreMaterial);
     const tr = document.createElement("tr");
     tr.setAttribute("data-material-row", mat.idMaterial || "");
+    tr.setAttribute("data-material-type", hiloMaterial ? "hilo" : "normal");
     tr.className = "align-middle receta-material-row";
-    tr.innerHTML = `
+    tr.innerHTML = hiloMaterial ? `
+      <td class="px-3 py-3 align-top sm:px-4 sm:py-4 receta-material-cell" data-label="Materia Prima">
+        <div class="break-words font-semibold leading-snug text-slate-200 receta-material-nombre">${mat.nombreMaterial || ""}</div>
+      </td>
+      <td colspan="2" class="px-2 py-3 align-top sm:px-4 sm:py-4 receta-material-cell" data-label="Cantidad por unidad">
+        <input
+          type="number"
+          step="0.01"
+          min="0"
+          placeholder="Monto en C$"
+          aria-label="Monto en cordobas"
+          title="Monto en cordobas"
+          class="cant w-full min-w-0 rounded-lg border border-slate-700 bg-slate-800 px-2 py-2 text-center text-[11px] text-slate-200 outline-none focus:ring-2 focus:ring-emerald-400 sm:px-3 sm:text-sm receta-input"
+          data-id="${mat.idMaterial || ""}"
+        >
+      </td>
+      <td class="px-2 py-3 align-top sm:px-4 sm:py-4 receta-material-cell" data-label="Cantidad total">
+        <span class="cantidad-real block break-words text-[12px] font-bold text-emerald-400 sm:text-sm receta-cantidad-real">0</span>
+      </td>
+    ` : `
       <td class="px-3 py-3 align-top sm:px-4 sm:py-4 receta-material-cell" data-label="Materia Prima">
         <div class="break-words font-semibold leading-snug text-slate-200 receta-material-nombre">${mat.nombreMaterial || ""}</div>
       </td>
@@ -278,8 +300,9 @@ function buildPayload() {
     const cantidadInput = row.querySelector(".cant");
     const desperdicioInput = row.querySelector(".desp");
     const idMaterial = cantidadInput ? cantidadInput.getAttribute("data-id") : "";
+    const isHilo = row.getAttribute("data-material-type") === "hilo";
     const cantidadPorUnidad = Number(cantidadInput ? cantidadInput.value : 0);
-    const porcentajeDesperdicio = Number(desperdicioInput ? desperdicioInput.value : 0);
+    const porcentajeDesperdicio = isHilo ? 0 : Number(desperdicioInput ? desperdicioInput.value : 0);
 
     if (!idMaterial || cantidadPorUnidad <= 0) return;
 

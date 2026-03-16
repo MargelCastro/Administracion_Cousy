@@ -113,7 +113,7 @@
       : "";
 
     return `
-      <div class="min-h-screen md:flex">
+      <div class="min-h-screen md:flex md:items-start">
         <div
           id="sidebarBackdrop"
           class="hidden fixed inset-0 z-30 bg-slate-950/70 md:hidden"
@@ -122,19 +122,19 @@
 
         <aside
           id="sidebar"
-          class="hidden fixed inset-y-0 left-0 z-40 w-72 flex-col bg-slate-900 border-r border-slate-800 lg:static lg:flex"
+          class="hidden fixed inset-y-0 left-0 z-40 flex-col bg-slate-900 border-r border-slate-800 w-full sm:w-72 md:sticky md:top-0 md:h-screen md:overflow-y-auto md:shrink-0 lg:static lg:flex"
         >
-          <div class="px-6 py-5 border-b border-slate-800">
+          <div class="px-6 pt-5 pb-3">
             <h1 class="text-xl font-semibold text-slate-200">${options.brandTitle || "ERP Cousy"}</h1>
             <p class="text-xs text-slate-500 mt-1">${options.brandSubtitle || "Dashboard"}</p>
           </div>
 
-          <nav class="p-4 space-y-2">
+          <nav class="px-4 pb-4 pt-6 space-y-2">
             ${navItems}
           </nav>
         </aside>
 
-        <div class="flex-1 flex flex-col">
+        <div class="flex-1 flex flex-col min-w-0">
           <header class="bg-slate-900/90 border-b border-slate-800 px-4 md:px-8 py-4 flex items-center justify-between gap-4">
             <div class="flex items-center gap-5 md:gap-6 lg:gap-3">
               <button
