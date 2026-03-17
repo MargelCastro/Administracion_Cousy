@@ -113,7 +113,7 @@
       : "";
 
     return `
-      <div class="min-h-screen md:flex md:items-start">
+      <div class="app-shell min-h-screen bg-slate-950 md:flex md:items-start">
         <div
           id="sidebarBackdrop"
           class="hidden fixed inset-0 z-30 bg-slate-950/70 md:hidden"
@@ -122,27 +122,28 @@
 
         <aside
           id="sidebar"
-          class="hidden fixed inset-y-0 left-0 z-40 flex-col bg-slate-900 border-r border-slate-800 w-full sm:w-72 md:sticky md:top-0 md:h-screen md:overflow-y-auto md:shrink-0 lg:static lg:flex"
+          class="app-shell-sidebar hidden fixed inset-y-0 left-0 z-40 w-screen flex-col bg-slate-900 md:sticky md:top-0 md:flex md:h-screen md:w-72 md:overflow-y-auto"
         >
           <div class="px-6 pt-5 pb-3">
             <h1 class="text-xl font-semibold text-slate-200">${options.brandTitle || "ERP Cousy"}</h1>
             <p class="text-xs text-slate-500 mt-1">${options.brandSubtitle || "Dashboard"}</p>
           </div>
 
-          <nav class="px-4 pb-4 pt-6 space-y-2">
+          <nav class="px-4 pb-6 pt-6 space-y-2">
             ${navItems}
           </nav>
         </aside>
 
-        <div class="flex-1 flex flex-col min-w-0">
-          <header class="bg-slate-900/90 border-b border-slate-800 px-4 md:px-8 py-4 flex items-center justify-between gap-4">
+        <div class="flex min-w-0 flex-1 flex-col">
+          <header class="app-shell-header sticky top-0 z-50 bg-slate-900/95 px-4 py-4 backdrop-blur md:px-8 flex items-center justify-between gap-4">
             <div class="flex items-center gap-5 md:gap-6 lg:gap-3">
               <button
                 id="sidebarToggleBtn"
                 type="button"
-                class="inline-flex items-center justify-center text-emerald-400 transition-colors hover:text-emerald-300 lg:hidden"
+                class="inline-flex h-11 w-11 shrink-0 items-center justify-center text-emerald-400 transition-colors hover:text-emerald-300 md:hidden"
                 aria-label="Abrir menú"
                 title="Abrir menú"
+                aria-expanded="false"
               >
                 <span class="text-[1.6rem] leading-none">☰</span>
               </button>
@@ -177,7 +178,7 @@
             </div>
           </header>
 
-          <main class="${options.mainClass || "flex-1 p-4 md:p-8 overflow-y-auto"}">
+          <main class="${options.mainClass || "app-shell-main flex-1 p-4 md:p-8"}">
             ${options.mainContentHtml || ""}
           </main>
         </div>
@@ -197,18 +198,36 @@
 
     const sidebar = document.getElementById("sidebar");
     const backdrop = document.getElementById("sidebarBackdrop");
+    const sidebarToggleBtn = document.getElementById("sidebarToggleBtn");
+
+    function syncSidebarToggleState(isOpen) {
+      if (!sidebarToggleBtn) return;
+      sidebarToggleBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      sidebarToggleBtn.setAttribute("aria-label", isOpen ? "Cerrar menú" : "Abrir menú");
+      sidebarToggleBtn.setAttribute("title", isOpen ? "Cerrar menú" : "Abrir menú");
+      sidebarToggleBtn.innerHTML = `<span class="text-[1.6rem] leading-none">${isOpen ? "✕" : "☰"}</span>`;
+    }
 
     function closeSidebar() {
+      if (window.innerWidth >= 768) {
+        syncSidebarToggleState(false);
+        return;
+      }
       sidebar.classList.add("hidden");
       backdrop.classList.add("hidden");
+      syncSidebarToggleState(false);
     }
 
     function openSidebar() {
       sidebar.classList.remove("hidden");
       backdrop.classList.remove("hidden");
+      syncSidebarToggleState(true);
     }
 
     function toggleSidebar() {
+      if (window.innerWidth >= 768) {
+        return;
+      }
       const shouldOpen = sidebar.classList.contains("hidden");
       if (shouldOpen) {
         openSidebar();
@@ -219,8 +238,21 @@
 
     document.getElementById("themeToggleBtn").addEventListener("click", window.AppTheme.toggleTheme);
     document.getElementById("logoutBtn").addEventListener("click", logout);
-    document.getElementById("sidebarToggleBtn").addEventListener("click", toggleSidebar);
+    sidebarToggleBtn.addEventListener("click", toggleSidebar);
     backdrop.addEventListener("click", closeSidebar);
+    syncSidebarToggleState(false);
+
+    window.addEventListener("resize", () => {
+      if (window.innerWidth >= 768) {
+        sidebar.classList.remove("hidden");
+        backdrop.classList.add("hidden");
+        syncSidebarToggleState(false);
+        return;
+      }
+      sidebar.classList.add("hidden");
+      backdrop.classList.add("hidden");
+      syncSidebarToggleState(false);
+    });
 
     document.querySelectorAll("[data-tab-target]").forEach((item) => {
       item.addEventListener("click", () => {

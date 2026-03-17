@@ -411,7 +411,7 @@ document.addEventListener("DOMContentLoaded", () => {
       { id: "mp_cotizacion", label: "Materia Prima de Cotización", href: "/dashboard.html#mp_cotizacion" }
     ],
     mainContentHtml: mainContentHtml,
-    mainClass: "flex-1 p-4 md:p-8 overflow-y-auto space-y-4 md:space-y-6"
+    mainClass: "app-shell-main flex-1 p-4 md:p-8 space-y-4 md:space-y-6"
   });
 
   if (!app) return;

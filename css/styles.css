@@ -2,6 +2,11 @@ body {
   font-family: "Inter", sans-serif;
 }
 
+.app-shell-header,
+.app-shell-sidebar {
+  background-color: #0f172a;
+}
+
 .theme-toggle-btn {
   position: fixed;
   top: 16px;
@@ -33,13 +38,28 @@ body.light-theme .bg-slate-900\/90 {
   background-color: #ffffff !important;
 }
 
+body.light-theme .bg-slate-900\/95,
+body.light-theme .app-shell-header,
+body.light-theme .app-shell-sidebar {
+  background-color: #ffffff !important;
+}
+
 body.light-theme .bg-slate-800 {
   background-color: #f8fafc !important;
+}
+
+body.light-theme .bg-slate-800\/60,
+body.light-theme .bg-slate-900\/60 {
+  background-color: rgba(255, 255, 255, 0.96) !important;
 }
 
 body.light-theme .border-slate-800,
 body.light-theme .border-slate-700 {
   border-color: #cbd5e1 !important;
+}
+
+body.light-theme .app-shell-main {
+  background-color: #f8fafc !important;
 }
 
 body.light-theme .text-slate-200 {
@@ -138,7 +158,76 @@ body.light-theme .receta-table-head {
 
 body.light-theme .producto-card,
 body.light-theme .producto-empty {
-  background: linear-gradient(180deg, #0f172a 0%, #064e3b 100%) !important;
+  background: #ffffff !important;
+}
+
+body.light-theme .producto-card-meta {
+  background-color: #ffffff !important;
+  border-color: #dbe4f0 !important;
+}
+
+.producto-card {
+  cursor: pointer;
+}
+
+.producto-card span {
+  white-space: nowrap;
+}
+
+.producto-card-check-ui {
+  position: relative;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.producto-card-check input:checked + .producto-card-check-ui {
+  background-color: #10b981;
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
+}
+
+.producto-card-check input:checked + .producto-card-check-ui::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0.4rem;
+  height: 0.7rem;
+  border: solid #ffffff;
+  border-width: 0 2px 2px 0;
+  transform: translate(-50%, -58%) rotate(45deg);
+}
+
+.producto-card-selected {
+  border-color: rgb(16 185 129 / 0.95) !important;
+  box-shadow: 0 0 0 2px rgb(16 185 129 / 0.35), 0 18px 40px rgb(15 23 42 / 0.24);
+  transform: translateY(-2px);
+}
+
+body.light-theme .producto-card {
+  border-color: #dbe4f0 !important;
+  box-shadow: 0 18px 40px rgba(148, 163, 184, 0.14);
+}
+
+body.light-theme .producto-card-selected {
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.22), 0 20px 44px rgba(15, 23, 42, 0.10) !important;
+}
+
+body.light-theme .producto-card-check-ui {
+  background-color: #ffffff;
+  border-color: rgba(16, 185, 129, 0.75);
+}
+
+body.light-theme .producto-card .text-slate-100,
+body.light-theme .producto-card .text-slate-300,
+body.light-theme .producto-card .text-slate-400,
+body.light-theme .producto-card .text-slate-500 {
+  color: #0f172a !important;
+}
+
+body.light-theme .producto-card .border-slate-700,
+body.light-theme .producto-card .border-slate-800 {
+  border-color: #dbe4f0 !important;
 }
 
 .categoria-group {

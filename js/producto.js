@@ -3,7 +3,8 @@ const PRODUCTO_SCRIPT_URL = window.APP_CONFIG && window.APP_CONFIG.SCRIPT_URL
   : "";
 
 const productoState = {
-  productos: []
+  productos: [],
+  selectedProductoIds: []
 };
 
 function productoJsonpRequest(params, timeoutMs = 12000) {
@@ -47,13 +48,6 @@ function productoJsonpRequest(params, timeoutMs = 12000) {
 
     document.body.appendChild(scriptTag);
   });
-}
-
-function formatProductoDate(value) {
-  if (!value) return "";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return String(value);
-  return date.toLocaleString("es-NI");
 }
 
 function showProductoStatus(message, isSuccess) {
@@ -135,43 +129,73 @@ function renderProductos(productos) {
 
   productos.forEach((producto) => {
     const categorias = normalizeCategorias(producto);
+    const productoId = String(producto.idProducto || "");
+    const isSelected = productoState.selectedProductoIds.indexOf(productoId) !== -1;
     const categoriasHtml = categorias.length
-      ? categorias.map((categoria) => `<span class="rounded-full border border-emerald-700/40 bg-emerald-500/10 px-2 py-1 text-xs font-medium text-emerald-300">${categoria}</span>`).join("")
+      ? categorias.map((categoria) => `<span class="rounded-full border border-emerald-700/40 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium leading-none text-emerald-300">${categoria}</span>`).join("")
       : '<span class="rounded-full border border-slate-700 px-2 py-1 text-xs text-slate-400">Sin categoria</span>';
 
     const card = document.createElement("article");
-    card.className = "overflow-hidden rounded-2xl border border-slate-800 bg-slate-800/60";
+    card.className = `producto-card group relative mx-auto w-full max-w-[19rem] overflow-hidden rounded-2xl border border-slate-800 bg-slate-800/60 transition-all duration-200 hover:-translate-y-1 hover:border-emerald-500/60 hover:shadow-[0_16px_40px_rgba(15,23,42,0.28)] ${isSelected ? "producto-card-selected" : ""}`;
+    card.tabIndex = 0;
+    card.setAttribute("role", "button");
+    card.setAttribute("aria-pressed", isSelected ? "true" : "false");
+    card.dataset.productoId = productoId;
     card.innerHTML = `
-      <div class="aspect-[4/3] bg-slate-900">
+      <label class="producto-card-check absolute left-3 top-3 z-10 inline-flex cursor-pointer items-center">
+        <input type="checkbox" class="sr-only" ${isSelected ? "checked" : ""} aria-label="Seleccionar ${producto.nombreProducto || "producto"}">
+        <span class="producto-card-check-ui h-6 w-6 rounded-full border border-emerald-400/70 bg-white/95 shadow-sm"></span>
+      </label>
+      <div class="aspect-[3/2] bg-slate-900">
         ${producto.imagen
           ? `<img src="${producto.imagen}" alt="${producto.nombreProducto || "Producto"}" class="h-full w-full object-cover">`
           : `<div class="flex h-full items-center justify-center text-sm font-semibold text-slate-500">Sin imagen</div>`
         }
       </div>
-      <div class="space-y-4 p-5">
+      <div class="space-y-2 p-3">
         <div>
           <p class="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">${producto.idProducto || ""}</p>
-          <h3 class="mt-2 text-xl font-bold text-slate-100">${producto.nombreProducto || ""}</h3>
+          <h3 class="mt-1.5 text-base font-bold text-slate-100">${producto.nombreProducto || ""}</h3>
         </div>
-        <div class="flex flex-wrap gap-2">
+        <div class="flex flex-wrap gap-1">
           ${categoriasHtml}
         </div>
-        <div class="grid grid-cols-2 gap-3 text-sm text-slate-300">
-          <div class="rounded-xl border border-slate-700 bg-slate-900/60 p-3">
+        <div class="grid grid-cols-2 gap-2 text-sm text-slate-300">
+          <div class="producto-card-meta rounded-xl border border-slate-700 bg-slate-900/60 p-2.5">
             <p class="text-xs text-slate-500">Estado</p>
             <p class="mt-1 font-semibold text-slate-100">${producto.estado || "Activo"}</p>
           </div>
-          <div class="rounded-xl border border-slate-700 bg-slate-900/60 p-3">
+          <div class="producto-card-meta rounded-xl border border-slate-700 bg-slate-900/60 p-2.5">
             <p class="text-xs text-slate-500">Materiales</p>
             <p class="mt-1 font-semibold text-slate-100">${producto.totalMateriales || 0}</p>
-          </div>
-          <div class="rounded-xl border border-slate-700 bg-slate-900/60 p-3 col-span-2">
-            <p class="text-xs text-slate-500">Fecha</p>
-            <p class="mt-1 font-semibold text-slate-100">${formatProductoDate(producto.fechaCreacion)}</p>
           </div>
         </div>
       </div>
     `;
+    function toggleSelectedCard() {
+      const currentIndex = productoState.selectedProductoIds.indexOf(productoId);
+      if (currentIndex === -1) {
+        productoState.selectedProductoIds.push(productoId);
+      } else {
+        productoState.selectedProductoIds.splice(currentIndex, 1);
+      }
+      applyFilters();
+    }
+    const checkbox = card.querySelector('input[type="checkbox"]');
+    const checkboxLabel = card.querySelector(".producto-card-check");
+    if (checkboxLabel) {
+      checkboxLabel.addEventListener("click", (event) => {
+        event.stopPropagation();
+        toggleSelectedCard();
+      });
+    }
+    card.addEventListener("click", toggleSelectedCard);
+    card.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        toggleSelectedCard();
+      }
+    });
     grid.appendChild(card);
   });
 }
@@ -218,7 +242,7 @@ document.addEventListener("DOMContentLoaded", () => {
       { id: "mp_cotizacion", label: "Materia Prima de Cotización", href: "/dashboard.html#mp_cotizacion" }
     ],
     mainContentHtml: mainContentHtml,
-    mainClass: "flex-1 p-4 md:p-8 overflow-y-auto space-y-4 md:space-y-6"
+    mainClass: "app-shell-main flex-1 p-4 md:p-8 space-y-4 md:space-y-6"
   });
 
   if (!app) return;
