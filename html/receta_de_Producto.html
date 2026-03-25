@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Receta de Producto</title>
+  <link rel="icon" type="image/png" href="../img/Logo CousyCompress.png">
+  <link rel="stylesheet" href="../css/tailwind.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="bg-slate-950 text-slate-200 antialiased">
+  <template id="recetaProductoContentTemplate">
+    <div class="mx-auto max-w-7xl space-y-4 overflow-x-hidden md:space-y-6">
+      <div class="space-y-1 px-1">
+        <p class="text-sm text-slate-500">Define el producto y registra su receta usando las materias primas activas del inventario.</p>
+      </div>
+
+      <section class="rounded-2xl border border-slate-800 bg-slate-900 p-4 md:p-6">
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div class="space-y-2 md:col-span-1">
+              <label for="nombreProducto" class="text-sm text-slate-500">Nombre del producto</label>
+              <input id="nombreProducto" type="text" placeholder="Ej: Tote Bag talla M" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-slate-200 placeholder-slate-500 outline-none transition focus:ring-2 focus:ring-emerald-400">
+            </div>
+            <div class="space-y-2 md:col-span-1">
+              <label for="urlImagen" class="text-sm text-slate-500">Imagen del producto</label>
+              <input id="urlImagen" type="text" placeholder="https://..." class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-slate-200 placeholder-slate-500 outline-none transition focus:ring-2 focus:ring-emerald-400">
+            </div>
+            <div class="space-y-2 md:col-span-3">
+              <label class="text-sm text-slate-500">Categorias</label>
+              <div id="categoriasProducto" class="categoria-group grid grid-cols-2 gap-2 rounded-2xl border border-slate-700 bg-slate-900 p-2 sm:grid-cols-2 lg:grid-cols-3"></div>
+            </div>
+          </div>
+
+          <div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div class="rounded-2xl border border-slate-800 bg-slate-800 p-4 text-center">
+              <p class="text-xs uppercase tracking-[0.2em] text-slate-500">ID generado</p>
+              <p id="previewIdProducto" class="mt-2 text-2xl font-bold text-emerald-400">----</p>
+            </div>
+            <div class="rounded-2xl border border-slate-800 bg-slate-800 p-4 text-center">
+              <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Materiales seleccionados</p>
+              <p id="resumenMateriales" class="mt-2 text-2xl font-bold text-slate-200">0</p>
+            </div>
+          </div>
+
+          <div class="mt-6 overflow-hidden rounded-2xl border border-slate-800 receta-materiales-table-shell">
+            <div class="overflow-hidden receta-materiales-table-wrap">
+              <table class="min-w-full table-fixed text-[11px] sm:text-xs md:text-sm receta-materiales-table">
+                <thead class="receta-materiales-head">
+                  <tr class="border-b border-slate-700 bg-slate-800 text-left text-slate-300">
+                    <th class="w-[28%] px-3 py-3 text-left sm:px-4 sm:py-4">Materia Prima</th>
+                    <th class="w-[26%] px-2 py-3 text-left sm:px-4">Cantidad por unidad</th>
+                    <th class="w-[24%] px-2 py-3 text-left sm:px-4">% desperdicio</th>
+                    <th class="w-[22%] px-2 py-3 text-left sm:px-4">Cantidad total</th>
+                  </tr>
+                </thead>
+                <tbody id="listaMateriales" class="bg-slate-900 receta-materiales-body">
+                  <tr>
+                    <td colspan="4" class="px-4 py-10 text-center text-slate-500 receta-table-message">Cargando materiales...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div id="status" class="mt-4 hidden rounded-lg border px-4 py-3 text-sm font-semibold"></div>
+
+          <div class="mt-6 flex flex-col gap-3 md:flex-row">
+            <button id="btnGuardarReceta" type="button" class="rounded-lg bg-emerald-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400">
+              Guardar receta y producto
+            </button>
+            <a href="Producto.html" class="rounded-lg border border-slate-700 bg-slate-800 px-5 py-3 text-center text-sm font-semibold text-slate-200 transition hover:border-emerald-400 hover:text-emerald-400">
+              Ver productos
+            </a>
+          </div>
+      </section>
+    </div>
+  </template>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/theme.js"></script>
+  <script src="../js/layout.js"></script>
+  <script src="../js/recetaProducto.js"></script>
+<script src="../js/routes.js"></script>
+</body>
+</html>

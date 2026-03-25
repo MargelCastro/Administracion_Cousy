@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Productos</title>
+  <link rel="icon" type="image/png" href="../img/Logo CousyCompress.png">
+  <link rel="stylesheet" href="../css/tailwind.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="bg-slate-950 text-slate-200 antialiased">
+  <template id="productoContentTemplate">
+    <div class="mx-auto max-w-7xl space-y-4 md:space-y-6">
+      <div class="space-y-1 px-1">
+        <p class="text-sm text-slate-500">Vista de los productos creados desde la receta, con su imagen y datos principales.</p>
+      </div>
+
+      <section class="rounded-2xl border border-slate-800 bg-slate-900 p-4 md:p-6">
+          <div class="mb-4 grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div class="space-y-2">
+              <label for="buscarProducto" class="text-sm text-slate-500">Buscar por nombre</label>
+              <input id="buscarProducto" type="text" placeholder="Ej: mochila escolar" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/30">
+            </div>
+            <div class="space-y-2">
+              <label for="filtroCategoria" class="text-sm text-slate-500">Filtrar por categoria</label>
+              <select id="filtroCategoria" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/30">
+                <option value="">Todas las categorias</option>
+              </select>
+            </div>
+          </div>
+          <div id="productoStatus" class="hidden rounded-2xl border px-4 py-3 text-sm font-semibold"></div>
+          <div id="productosGrid" class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+            <div class="rounded-2xl border border-slate-800 bg-slate-800/60 p-6 text-center text-slate-500">
+              Cargando productos...
+            </div>
+          </div>
+      </section>
+    </div>
+  </template>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/theme.js"></script>
+  <script src="../js/layout.js"></script>
+  <script src="../js/producto.js"></script>
+<script src="../js/routes.js"></script>
+</body>
+</html>

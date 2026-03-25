@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cotizaciones</title>
+  <link rel="icon" type="image/png" href="../img/Logo CousyCompress.png">
+  <link rel="stylesheet" href="../css/tailwind.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="bg-slate-950 text-slate-200 antialiased">
+  <template id="cotizacionesContentTemplate">
+    <div class="mx-auto max-w-6xl space-y-4 md:space-y-6">
+      <div class="space-y-1 px-1">
+        <p class="text-sm text-slate-500">Resumen y seguimiento de cotizaciones.</p>
+      </div>
+      <section class="grid grid-cols-1 gap-3 rounded-2xl border border-slate-800 bg-slate-900 p-4 md:grid-cols-3 md:p-6">
+        <input
+          type="text"
+          placeholder="Buscar cotización"
+          class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2.5 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+        />
+        <select
+          class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2.5 text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+        >
+          <option>Todas</option>
+          <option>Aprobadas</option>
+          <option>Pendientes</option>
+        </select>
+        <button
+          type="button"
+          class="rounded-lg bg-emerald-500 px-4 py-2.5 font-semibold text-emerald-950 transition-colors hover:bg-emerald-400"
+        >
+          Nueva cotización
+        </button>
+      </section>
+
+      <section class="rounded-2xl border border-slate-800 bg-slate-900 p-4 md:p-6">
+        <div class="mb-4 flex flex-wrap items-center gap-2">
+          <span class="rounded-md border border-emerald-700 bg-emerald-900 px-2 py-1 text-xs text-emerald-400">Éxito: sincronizado</span>
+          <span class="rounded-md border border-red-700 bg-red-900 px-2 py-1 text-xs text-red-400">Error: pendiente de revisión</span>
+        </div>
+        <p class="text-slate-500">Tabla de cotizaciones aquí</p>
+      </section>
+    </div>
+  </template>
+
+  <script src="../js/theme.js"></script>
+  <script src="../js/layout.js"></script>
+  <script src="../js/cotizaciones.js"></script>
+  <script src="../js/routes.js"></script>
+</body>
+</html>

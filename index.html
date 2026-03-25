@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cousy Login Admin</title>
+  <link rel="icon" type="image/png" href="./img/Logo CousyCompress.png">
+  <link rel="stylesheet" href="./css/tailwind.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+
+<body class="bg-slate-950 text-slate-200 antialiased">
+  <button
+    id="themeToggleBtn"
+    type="button"
+    class="theme-toggle-btn inline-flex h-10 w-10 items-center justify-center rounded-md border border-slate-700 bg-slate-800 text-slate-200 hover:text-emerald-400 transition-colors"
+    aria-label="Cambiar tema"
+    title="Cambiar tema"
+  >
+  </button>
+
+  <main class="min-h-screen flex items-center justify-center px-4 py-6 sm:px-6 md:px-8 md:py-10">
+    <section class="w-full max-w-sm sm:max-w-md md:max-w-xl lg:max-w-4xl">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl md:rounded-3xl overflow-hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-2">
+          <aside class="hidden lg:flex items-center justify-center p-8 xl:p-10 border-r border-slate-800 bg-slate-900">
+            <div class="text-center space-y-4 max-w-sm">
+              <img src="./img/Logo CousyCompress.png" alt="Logo Cousy"
+                class="mx-auto h-20 w-20 rounded-full object-cover" />
+              <h1 class="text-3xl font-semibold leading-tight text-slate-200">Cousy Login Admin</h1>
+              <p class="text-sm text-slate-500">Acceso seguro al panel administrativo.</p>
+            </div>
+          </aside>
+
+          <div class="p-5 sm:p-6 md:p-8 lg:p-10 space-y-5">
+            <div class="text-center lg:text-left space-y-1">
+              <h1 class="text-2xl sm:text-3xl font-semibold text-slate-200 lg:hidden">Cousy Login Admin</h1>
+              <p class="text-sm text-slate-500">Acceso seguro al sistema administrativo</p>
+            </div>
+
+            <div class="space-y-4">
+              <div>
+                <label for="usuario" class="block text-sm text-slate-500 mb-2">Usuario</label>
+                <input id="usuario" type="text" placeholder="admin@cousy.com"
+                  class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 placeholder-slate-500 px-3 py-2.5 sm:py-3 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+              </div>
+
+              <div>
+                <label for="clave" class="block text-sm text-slate-500 mb-2">Contraseña</label>
+                <input id="clave" type="password" placeholder="••••••••"
+                  class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 placeholder-slate-500 px-3 py-2.5 sm:py-3 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+              </div>
+
+              <button id="btnLogin" type="button"
+                class="w-full rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold px-4 py-2.5 sm:py-3 transition-colors"
+                onclick="iniciarSesion(event)">
+                Iniciar sesión
+              </button>
+
+              <p id="estado" class="hidden text-xs px-2 py-1 rounded-md border"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="./js/theme.js"></script>
+  <script>
+    window.AppTheme.initStandaloneThemeButton();
+
+    function loginViaJsonp(scriptURL, usuario, clave, timeoutMs = 10000) {
+      return new Promise((resolve, reject) => {
+        const callbackName = "jsonpLogin_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
+        const scriptTag = document.createElement("script");
+        let timer = null;
+
+        const cleanup = () => {
+          if (timer) clearTimeout(timer);
+          if (scriptTag.parentNode) scriptTag.parentNode.removeChild(scriptTag);
+          try {
+            delete window[callbackName];
+          } catch (_) {
+            window[callbackName] = undefined;
+          }
+        };
+
+        window[callbackName] = (data) => {
+          cleanup();
+          resolve(data);
+        };
+
+        timer = setTimeout(() => {
+          cleanup();
+          reject(new Error("Timeout de JSONP al autenticar."));
+        }, timeoutMs);
+
+        const query = new URLSearchParams({
+          accion: "login",
+          usuario: usuario,
+          password: clave,
+          callback: callbackName
+        });
+
+        scriptTag.src = `${scriptURL}?${query.toString()}`;
+        scriptTag.async = true;
+        scriptTag.onerror = () => {
+          cleanup();
+          reject(new Error("No se pudo cargar el script remoto de autenticación."));
+        };
+
+        document.body.appendChild(scriptTag);
+      });
+    }
+
+    function manejarResultadoLogin(data, usuarioFallback) {
+      const estado = document.getElementById("estado");
+
+      if (data && data.success) {
+        estado.className = "text-xs px-2 py-1 rounded-md border bg-emerald-900 text-emerald-400 border-emerald-700";
+        estado.textContent = "Acceso correcto. Redirigiendo...";
+
+        try {
+          sessionStorage.setItem("cousyUsuario", data.usuario || usuarioFallback);
+          sessionStorage.setItem("cousyRol", data.rol || "N/D");
+        } catch (_) { }
+
+        setTimeout(() => {
+          window.location.assign("html/cotizaciones.html");
+        }, 1200);
+        return;
+      }
+
+      estado.className = "text-xs px-2 py-1 rounded-md border bg-red-900 text-red-400 border-red-700";
+      estado.textContent = (data && data.message) ? data.message : "Usuario o contraseña incorrectos.";
+    }
+
+    async function iniciarSesion(event) {
+      if (event) event.preventDefault();
+
+      const usuario = document.getElementById("usuario").value.trim();
+      const clave = document.getElementById("clave").value.trim();
+      const estado = document.getElementById("estado");
+
+      if (!usuario || !clave) {
+        estado.className = "text-xs px-2 py-1 rounded-md border bg-red-900 text-red-400 border-red-700";
+        estado.textContent = "Completa usuario y contraseña.";
+        estado.classList.remove("hidden");
+        return;
+      }
+
+      estado.className = "text-xs px-2 py-1 rounded-md border bg-slate-800 text-slate-300 border-slate-700";
+      estado.textContent = "Validando de forma remota...";
+      estado.classList.remove("hidden");
+
+      try {
+        const scriptURL = "https://script.google.com/macros/s/AKfycbzKrfl7_XumwDQCXm2gdEu7GQXFAAsQRg6ISIqw4_wVEs86_2nzz4EyNS1psJHwm3YS6A/exec";
+        const data = await loginViaJsonp(scriptURL, usuario, clave);
+        console.log("Servidor respondió (JSONP):", data);
+        manejarResultadoLogin(data, usuario);
+      } catch (error) {
+        console.error("Fallo de autenticación remota:", error);
+        estado.className = "text-xs px-2 py-1 rounded-md border bg-red-900 text-red-400 border-red-700";
+        estado.textContent = "Fallo en la comunicación con el servidor. Revisa tu consola.";
+      }
+    }
+  </script>
+<script src="./js/routes.js"></script>
+</body>
+
+</html>
