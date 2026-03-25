@@ -398,7 +398,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const app = window.AppLayout.init({
     brandTitle: "ERP Cousy",
     brandSubtitle: "Produccion",
-    headerTitle: "Receta de Producto",
+    headerTitle: "Receta Productos",
     activeNavId: "receta_producto",
     navItems: [
       { id: "cotizaciones", label: "Cotizaciones", href: "/html/cotizaciones.html" },

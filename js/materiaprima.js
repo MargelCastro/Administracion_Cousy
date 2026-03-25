@@ -361,7 +361,7 @@ function init() {
   const app = window.AppLayout.init({
     brandTitle: "ERP Cousy",
     brandSubtitle: "Inventario",
-    headerTitle: "Materia Prima Actual",
+    headerTitle: "Materia P. Actual",
     activeNavId: "materia-prima",
     navItems: [
       { id: "cotizaciones", label: "Cotizaciones", href: "/html/cotizaciones.html" },

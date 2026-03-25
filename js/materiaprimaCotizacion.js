@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   window.AppLayout.init({
     brandTitle: "ERP Cousy",
     brandSubtitle: "Dashboard",
-    headerTitle: "Materia Prima de Cotización",
+    headerTitle: "Mat. P. Cotización",
     activeNavId: "mp_cotizacion",
     navItems: [
       { id: "cotizaciones", label: "Cotizaciones", href: "/html/cotizaciones.html" },
