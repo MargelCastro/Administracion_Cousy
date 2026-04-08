@@ -15,37 +15,64 @@
       <div class="space-y-1 px-1">
         <p class="text-sm text-slate-500">Resumen y seguimiento de cotizaciones.</p>
       </div>
-      <section class="grid grid-cols-1 gap-3 rounded-2xl border border-slate-800 bg-slate-900 p-4 md:grid-cols-3 md:p-6">
-        <input
-          type="text"
-          placeholder="Buscar cotización"
-          class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2.5 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400"
-        />
-        <select
-          class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2.5 text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-400"
-        >
-          <option>Todas</option>
-          <option>Aprobadas</option>
-          <option>Pendientes</option>
-        </select>
-        <button
-          type="button"
-          class="rounded-lg bg-emerald-500 px-4 py-2.5 font-semibold text-emerald-950 transition-colors hover:bg-emerald-400"
-        >
-          Nueva cotización
-        </button>
+      <section class="cotizacion-toolbar rounded-2xl border border-slate-800 bg-slate-900 p-4 md:p-5">
+        <div class="cotizacion-toolbar-shell">
+          <div class="cotizacion-toolbar-fields">
+            <label class="cotizacion-toolbar-field">
+              <span class="cotizacion-toolbar-label">Buscar</span>
+              <input
+                type="text"
+                placeholder="Buscar cotización"
+                class="cotizacion-toolbar-input"
+              />
+            </label>
+            <label class="cotizacion-toolbar-field cotizacion-toolbar-field-filter">
+              <span class="cotizacion-toolbar-label">Estado</span>
+              <select class="cotizacion-toolbar-input cotizacion-toolbar-select">
+                <option>Todas</option>
+                <option>Aprobadas</option>
+                <option>Pendientes</option>
+              </select>
+            </label>
+          </div>
+          <div class="cotizacion-toolbar-actions">
+            <button
+              id="nuevaCotizacionBtn"
+              type="button"
+              class="cotizacion-toolbar-btn cotizacion-toolbar-btn-primary"
+            >
+              Nueva cotización
+            </button>
+            <button
+              id="agregarProductoBtn"
+              type="button"
+              class="cotizacion-toolbar-btn cotizacion-toolbar-btn-secondary"
+            >
+              Agregar otro producto
+            </button>
+          </div>
+        </div>
       </section>
 
       <section class="rounded-2xl border border-slate-800 bg-slate-900 p-4 md:p-6">
-        <div class="mb-4 flex flex-wrap items-center gap-2">
-          <span class="rounded-md border border-emerald-700 bg-emerald-900 px-2 py-1 text-xs text-emerald-400">Éxito: sincronizado</span>
-          <span class="rounded-md border border-red-700 bg-red-900 px-2 py-1 text-xs text-red-400">Error: pendiente de revisión</span>
+        <div class="mb-4 flex items-center justify-between gap-3">
+          <div>
+            <h3 class="text-lg font-semibold text-slate-200">Borrador de cotización</h3>
+            <p class="text-sm text-slate-500">Productos seleccionados desde el catálogo.</p>
+          </div>
+          <span id="cotizacionCountBadge" class="rounded-md border border-slate-700 bg-slate-800 px-2 py-1 text-xs text-slate-300">0 productos</span>
         </div>
-        <p class="text-slate-500">Tabla de cotizaciones aquí</p>
+        <div id="cotizacionVacia" class="rounded-xl border border-dashed border-slate-700 bg-slate-800/40 p-6 text-center text-slate-500">
+          Aún no has seleccionado productos para una cotización.
+        </div>
+        <div id="cotizacionListaWrap" class="hidden">
+          <ul id="cotizacionProductosList" class="space-y-3"></ul>
+        </div>
       </section>
     </div>
   </template>
 
+  <script src="../js/shared/cotizacionDraft.js"></script>
   <script src="../js/theme.js"></script>
   <script src="../js/layout.js"></script>
   <script src="../js/cotizaciones.js"></script>

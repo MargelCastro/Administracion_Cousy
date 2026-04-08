@@ -1,8 +1,89 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const template = document.getElementById("cotizacionesContentTemplate");
-  const mainContentHtml = template ? template.innerHTML : "";
+function renderCotizacionDraft() {
+  var productos = window.CotizacionDraft.read();
+  var emptyState = document.getElementById("cotizacionVacia");
+  var listWrap = document.getElementById("cotizacionListaWrap");
+  var list = document.getElementById("cotizacionProductosList");
+  var badge = document.getElementById("cotizacionCountBadge");
 
-  window.AppLayout.init({
+  if (!emptyState || !listWrap || !list || !badge) return;
+
+  badge.textContent = productos.length + (productos.length === 1 ? " producto" : " productos");
+  list.innerHTML = "";
+
+  if (productos.length === 0) {
+    emptyState.classList.remove("hidden");
+    listWrap.classList.add("hidden");
+    return;
+  }
+
+  emptyState.classList.add("hidden");
+  listWrap.classList.remove("hidden");
+
+  productos.forEach(function (producto) {
+    var item = document.createElement("li");
+    var categorias = Array.isArray(producto.categorias) && producto.categorias.length
+      ? producto.categorias.join(", ")
+      : (producto.categoria || "Sin categoria");
+
+    item.className = "cotizacion-banner";
+    item.innerHTML = [
+      '<div class="cotizacion-banner-grid">',
+      '  <div class="cotizacion-cell cotizacion-cell-producto">',
+      producto.imagen
+        ? '    <img src="' + producto.imagen + '" alt="' + (producto.nombreProducto || "Producto") + '" class="cotizacion-product-thumb">'
+        : '    <div class="cotizacion-product-thumb cotizacion-thumb-empty">Sin imagen</div>',
+      '    <div class="cotizacion-product-name">' + (producto.nombreProducto || "Producto sin nombre") + '</div>',
+      '  </div>',
+      '  <div class="cotizacion-cell">',
+      '    <div class="cotizacion-label">Codigo de Producto</div>',
+      '    <div class="cotizacion-value cotizacion-value-id">' + (producto.idProducto || "-") + '</div>',
+      '  </div>',
+      '  <div class="cotizacion-cell">',
+      '    <div class="cotizacion-label">Embalaje</div>',
+      '    <div class="cotizacion-value cotizacion-value-categorias">' + categorias + '</div>',
+      '  </div>',
+      '  <div class="cotizacion-cell">',
+      '    <div class="cotizacion-label">Cantidad</div>',
+      '    <div class="cotizacion-value">' + (producto.totalMateriales || 0) + '</div>',
+      '  </div>',
+      '  <div class="cotizacion-cell">',
+      '    <div class="cotizacion-label">Foto del Producto</div>',
+      producto.imagen
+        ? '    <img src="' + producto.imagen + '" alt="' + (producto.nombreProducto || "Producto") + '" class="cotizacion-product-photo">'
+        : '    <div class="cotizacion-product-photo cotizacion-thumb-empty">Sin imagen</div>',
+      '  </div>',
+      '  <div class="cotizacion-cell cotizacion-cell-input">',
+      '    <label class="cotizacion-label" for="cantidadCotizar_' + (producto.idProducto || "") + '">Cantidad a Cotizar</label>',
+      '    <input id="cantidadCotizar_' + (producto.idProducto || "") + '" data-cotizacion-cantidad="' + (producto.idProducto || "") + '" type="text" value="' + (producto.cantidadCotizar || "") + '" placeholder="Ej: 25" class="cotizacion-input-field">',
+      '  </div>',
+      '  <button type="button" data-cotizacion-remove="' + (producto.idProducto || "") + '" class="cotizacion-close-btn" aria-label="Quitar producto" title="Quitar producto">×</button>',
+      '</div>',
+    ].join("");
+    list.appendChild(item);
+  });
+
+  list.querySelectorAll("[data-cotizacion-cantidad]").forEach(function (input) {
+    input.addEventListener("input", function () {
+      window.CotizacionDraft.updateCantidad(
+        input.getAttribute("data-cotizacion-cantidad"),
+        input.value
+      );
+    });
+  });
+
+  list.querySelectorAll("[data-cotizacion-remove]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      window.CotizacionDraft.removeProducto(button.getAttribute("data-cotizacion-remove"));
+      renderCotizacionDraft();
+    });
+  });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  var template = document.getElementById("cotizacionesContentTemplate");
+  var mainContentHtml = template ? template.innerHTML : "";
+
+  var app = window.AppLayout.init({
     brandTitle: "ERP Cousy",
     brandSubtitle: "Dashboard",
     headerTitle: "Cotizaciones",
@@ -18,4 +99,23 @@ document.addEventListener("DOMContentLoaded", () => {
     ],
     mainContentHtml: mainContentHtml
   });
+
+  if (!app) return;
+
+  var nuevaCotizacionBtn = document.getElementById("nuevaCotizacionBtn");
+  var agregarProductoBtn = document.getElementById("agregarProductoBtn");
+  if (nuevaCotizacionBtn) {
+    nuevaCotizacionBtn.addEventListener("click", function () {
+      window.CotizacionDraft.clear();
+      window.location.href = "/html/Producto.html";
+    });
+  }
+
+  if (agregarProductoBtn) {
+    agregarProductoBtn.addEventListener("click", function () {
+      window.location.href = "/html/Producto.html";
+    });
+  }
+
+  renderCotizacionDraft();
 });
