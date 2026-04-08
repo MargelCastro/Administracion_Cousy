@@ -469,7 +469,11 @@ body.light-theme .receta-material-cell::before {
 }
 
 .cotizacion-cell-producto {
-  gap: 6px;
+  text-align: center;
+}
+
+.cotizacion-cell-thumb {
+  justify-content: center;
 }
 
 .cotizacion-label {
@@ -663,6 +667,286 @@ body.light-theme .receta-material-cell::before {
   background-color: rgba(16, 185, 129, 0.06);
 }
 
+.cotizacion-header-row {
+  display: none;
+}
+
+@media (max-width: 899px) {
+  .cotizacion-header-row {
+    display: none !important;
+  }
+
+  .cotizacion-banner {
+    border-radius: 16px;
+  }
+
+  .cotizacion-banner-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+  }
+
+  .cotizacion-cell,
+  .cotizacion-close-btn {
+    min-width: 0;
+  }
+
+  .cotizacion-cell {
+    align-items: flex-start;
+    text-align: left;
+    padding: 12px;
+  }
+
+  .cotizacion-cell::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #10b981;
+  }
+
+  .cotizacion-cell-producto,
+  .cotizacion-cell-thumb {
+    align-items: center;
+    text-align: center;
+  }
+
+  .cotizacion-cell-producto::before,
+  .cotizacion-cell-thumb::before {
+    width: 100%;
+    text-align: center;
+  }
+
+  .cotizacion-cell-input {
+    align-items: flex-start;
+  }
+
+  .cotizacion-input-field {
+    width: 100%;
+    margin: 0;
+    text-align: left;
+  }
+
+  .cotizacion-close-btn {
+    min-height: 46px;
+    width: 100%;
+    border-top: 1px solid rgba(148, 163, 184, 0.12);
+  }
+}
+
+@media (min-width: 640px) and (max-width: 899px) {
+  .cotizacion-banner-grid {
+    grid-template-columns: minmax(0, 1.3fr) 84px minmax(0, 0.8fr) minmax(0, 1fr) 48px;
+    align-items: center;
+  }
+
+  .cotizacion-cell {
+    padding: 10px 10px;
+  }
+
+  .cotizacion-cell::before {
+    display: none;
+  }
+
+  .cotizacion-cell-producto {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .cotizacion-cell-thumb {
+    align-items: center;
+    text-align: center;
+  }
+
+  .cotizacion-product-name {
+    font-size: 0.92rem;
+    line-height: 1.2;
+  }
+
+  .cotizacion-cell-mobile-hidden {
+    display: none;
+  }
+
+  .cotizacion-cell-input {
+    padding: 10px 6px;
+  }
+
+  .cotizacion-input-field {
+    width: 100%;
+    min-height: 38px;
+    margin: 0;
+    text-align: center;
+  }
+
+  .cotizacion-close-btn {
+    min-height: 38px;
+    width: 38px;
+    border-top: none;
+    justify-self: center;
+  }
+}
+
+@media (max-width: 639px) {
+  .cotizacion-toolbar {
+    padding: 0.9rem !important;
+  }
+
+  .cotizacion-toolbar-actions {
+    gap: 8px;
+  }
+
+  .cotizacion-toolbar-btn {
+    width: 100%;
+  }
+
+  .cotizacion-banner-grid {
+    grid-template-columns: minmax(0, 1.1fr) 64px minmax(0, 1fr) 36px;
+    align-items: center;
+  }
+
+  .cotizacion-cell {
+    padding: 8px 8px;
+  }
+
+  .cotizacion-cell::before {
+    display: none;
+  }
+
+  .cotizacion-cell-producto,
+  .cotizacion-cell-thumb {
+    align-items: center;
+    text-align: left;
+  }
+
+  .cotizacion-cell-producto {
+    align-items: flex-start;
+  }
+
+  .cotizacion-product-thumb {
+    width: 46px;
+    height: 46px;
+  }
+
+  .cotizacion-product-name {
+    font-size: 0.92rem;
+    line-height: 1.15;
+  }
+
+  .cotizacion-cell-mobile-hidden {
+    display: none;
+  }
+
+  .cotizacion-cell-input {
+    padding: 8px 4px;
+  }
+
+  .cotizacion-input-field {
+    width: 100%;
+    min-height: 36px;
+    padding: 6px 8px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+  }
+
+  .cotizacion-close-btn {
+    min-height: 36px;
+    width: 36px;
+    padding: 0;
+    border-top: none;
+    justify-self: center;
+  }
+
+  .cotizacion-banner {
+    border-radius: 14px;
+  }
+}
+
+body.light-theme .cotizacion-toolbar {
+  background: #ffffff !important;
+  border-color: #bbf7d0 !important;
+  box-shadow: none;
+}
+
+body.light-theme .cotizacion-toolbar-label {
+  color: #065f46 !important;
+}
+
+body.light-theme .cotizacion-toolbar-input {
+  background-color: #ffffff !important;
+  border-color: #a7f3d0 !important;
+  color: #0f172a !important;
+}
+
+body.light-theme .cotizacion-toolbar-input::placeholder {
+  color: #0f172a !important;
+  opacity: 1;
+}
+
+body.light-theme .cotizacion-toolbar-input:focus {
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.14) !important;
+  background-color: #ffffff !important;
+}
+
+body.light-theme .cotizacion-toolbar-btn-secondary {
+  border-color: #a7f3d0 !important;
+  background-color: #ffffff !important;
+  color: #065f46 !important;
+}
+
+body.light-theme .cotizacion-toolbar-btn-secondary:hover {
+  border-color: #10b981 !important;
+  color: #047857 !important;
+  background-color: #ecfdf5 !important;
+}
+
+body.light-theme .cotizacion-banner {
+  background-color: #ffffff !important;
+}
+
+body.light-theme .cotizacion-label {
+  color: #059669 !important;
+}
+
+body.light-theme .cotizacion-value,
+body.light-theme .cotizacion-product-name {
+  color: #0f172a !important;
+}
+
+body.light-theme .cotizacion-product-thumb,
+body.light-theme .cotizacion-product-photo {
+  box-shadow: none;
+}
+
+body.light-theme .cotizacion-thumb-empty {
+  border-color: #a7f3d0 !important;
+  background-color: #f0fdf4 !important;
+  color: #047857 !important;
+}
+
+body.light-theme .cotizacion-input-field {
+  background-color: #ffffff !important;
+  border-color: #a7f3d0 !important;
+  color: #0f172a !important;
+}
+
+body.light-theme .cotizacion-input-field::placeholder {
+  color: #10b981 !important;
+  opacity: 0.7;
+}
+
+body.light-theme .cotizacion-close-btn {
+  color: #059669 !important;
+}
+
+@media (max-width: 899px) {
+  body.light-theme .cotizacion-close-btn {
+    border-top-color: rgba(16, 185, 129, 0.16) !important;
+  }
+}
+
 @media (min-width: 900px) {
   .cotizacion-toolbar-shell {
     flex-direction: row;
@@ -686,8 +970,23 @@ body.light-theme .receta-material-cell::before {
     min-width: 190px;
   }
 
+  .cotizacion-header-row {
+    display: grid;
+    grid-template-columns: 1fr 80px 1.5fr 1.2fr 1fr 2fr 40px;
+    gap: 0;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 0 8px;
+    color: #059669;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
   .cotizacion-banner-grid {
-    grid-template-columns: 1fr 1.5fr 1.2fr 1fr 1.2fr 2fr 40px;
+    grid-template-columns: 1fr 80px 1.5fr 1.2fr 1fr 2fr 40px;
   }
 
   .cotizacion-cell {
