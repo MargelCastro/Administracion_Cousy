@@ -19,6 +19,23 @@ function renderCotizacionDraft() {
   emptyState.classList.add("hidden");
   listWrap.classList.remove("hidden");
 
+  function isSafeUrl(url) {
+    if (!url) return false;
+    var value = String(url).trim();
+    return value.startsWith("https://") || value.startsWith("http://");
+  }
+
+  function safeId(value) {
+    return String(value || "").replace(/[^a-zA-Z0-9_-]/g, "");
+  }
+
+  function createCell(label, className) {
+    var cell = document.createElement("div");
+    cell.className = className;
+    cell.setAttribute("data-label", label);
+    return cell;
+  }
+
   productos.forEach(function (producto) {
     var item = document.createElement("li");
     var categorias = Array.isArray(producto.categorias) && producto.categorias.length
@@ -26,31 +43,75 @@ function renderCotizacionDraft() {
       : (producto.categoria || "Sin categoria");
 
     item.className = "cotizacion-banner";
-    item.innerHTML = [
-      '<div class="cotizacion-banner-grid">',
-      '  <div class="cotizacion-cell cotizacion-cell-producto" data-label="Nombre">',
-      '    <div class="cotizacion-product-name">' + (producto.nombreProducto || "Producto sin nombre") + '</div>',
-      '  </div>',
-      '  <div class="cotizacion-cell cotizacion-cell-thumb" data-label="Imagen">',
-      producto.imagen
-        ? '    <img src="' + producto.imagen + '" alt="' + (producto.nombreProducto || "Producto") + '" class="cotizacion-product-thumb">'
-        : '    <div class="cotizacion-product-thumb cotizacion-thumb-empty">Sin imagen</div>',
-      '  </div>',
-      '  <div class="cotizacion-cell cotizacion-cell-mobile-hidden" data-label="Código de producto">',
-      '    <div class="cotizacion-value cotizacion-value-id">' + (producto.idProducto || "-") + '</div>',
-      '  </div>',
-      '  <div class="cotizacion-cell cotizacion-cell-mobile-hidden" data-label="Categoría">',
-      '    <div class="cotizacion-value cotizacion-value-categorias">' + categorias + '</div>',
-      '  </div>',
-      '  <div class="cotizacion-cell cotizacion-cell-mobile-hidden" data-label="Materiales que usa">',
-      '    <div class="cotizacion-value">' + (producto.totalMateriales || 0) + '</div>',
-      '  </div>',
-      '  <div class="cotizacion-cell cotizacion-cell-input" data-label="Cantidad a cotizar">',
-      '    <input id="cantidadCotizar_' + (producto.idProducto || "") + '" data-cotizacion-cantidad="' + (producto.idProducto || "") + '" type="text" value="' + (producto.cantidadCotizar || "") + '" placeholder="Ej: 25" class="cotizacion-input-field">',
-      '  </div>',
-      '  <button type="button" data-cotizacion-remove="' + (producto.idProducto || "") + '" class="cotizacion-close-btn" aria-label="Quitar producto" title="Quitar producto">×</button>',
-      '</div>',
-    ].join("");
+
+    var grid = document.createElement("div");
+    grid.className = "cotizacion-banner-grid";
+
+    var cellNombre = createCell("Nombre", "cotizacion-cell cotizacion-cell-producto");
+    var nameWrap = document.createElement("div");
+    nameWrap.className = "cotizacion-product-name";
+    nameWrap.textContent = producto.nombreProducto || "Producto sin nombre";
+    cellNombre.appendChild(nameWrap);
+    grid.appendChild(cellNombre);
+
+    var cellImagen = createCell("Imagen", "cotizacion-cell cotizacion-cell-thumb");
+    if (producto.imagen && isSafeUrl(producto.imagen)) {
+      var img = document.createElement("img");
+      img.className = "cotizacion-product-thumb";
+      img.alt = producto.nombreProducto || "Producto";
+      img.src = String(producto.imagen);
+      cellImagen.appendChild(img);
+    } else {
+      var noImg = document.createElement("div");
+      noImg.className = "cotizacion-product-thumb cotizacion-thumb-empty";
+      noImg.textContent = "Sin imagen";
+      cellImagen.appendChild(noImg);
+    }
+    grid.appendChild(cellImagen);
+
+    var cellCodigo = createCell("Código de producto", "cotizacion-cell cotizacion-cell-mobile-hidden");
+    var codeWrap = document.createElement("div");
+    codeWrap.className = "cotizacion-value cotizacion-value-id";
+    codeWrap.textContent = producto.idProducto || "-";
+    cellCodigo.appendChild(codeWrap);
+    grid.appendChild(cellCodigo);
+
+    var cellCategoria = createCell("Categoría", "cotizacion-cell cotizacion-cell-mobile-hidden");
+    var catWrap = document.createElement("div");
+    catWrap.className = "cotizacion-value cotizacion-value-categorias";
+    catWrap.textContent = categorias;
+    cellCategoria.appendChild(catWrap);
+    grid.appendChild(cellCategoria);
+
+    var cellMateriales = createCell("Materiales que usa", "cotizacion-cell cotizacion-cell-mobile-hidden");
+    var matWrap = document.createElement("div");
+    matWrap.className = "cotizacion-value";
+    matWrap.textContent = String(producto.totalMateriales || 0);
+    cellMateriales.appendChild(matWrap);
+    grid.appendChild(cellMateriales);
+
+    var cellCantidad = createCell("Cantidad a cotizar", "cotizacion-cell cotizacion-cell-input");
+    var input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = "Ej: 25";
+    input.className = "cotizacion-input-field";
+    input.value = producto.cantidadCotizar || "";
+    var productoId = String(producto.idProducto || "");
+    input.id = "cantidadCotizar_" + safeId(productoId);
+    input.setAttribute("data-cotizacion-cantidad", productoId);
+    cellCantidad.appendChild(input);
+    grid.appendChild(cellCantidad);
+
+    var removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.className = "cotizacion-close-btn";
+    removeBtn.setAttribute("data-cotizacion-remove", productoId);
+    removeBtn.setAttribute("aria-label", "Quitar producto");
+    removeBtn.setAttribute("title", "Quitar producto");
+    removeBtn.textContent = "×";
+    grid.appendChild(removeBtn);
+
+    item.appendChild(grid);
     list.appendChild(item);
   });
 

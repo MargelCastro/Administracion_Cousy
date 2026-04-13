@@ -5,6 +5,14 @@
       : "";
   }
 
+  function getAuthToken() {
+    try {
+      return sessionStorage.getItem("cousyAuthToken") || "";
+    } catch (_) {
+      return "";
+    }
+  }
+
   function jsonpRequest(params, options) {
     const settings = options || {};
     const timeoutMs = typeof settings.timeoutMs === "number" ? settings.timeoutMs : 12000;
@@ -41,7 +49,12 @@
         reject(new Error("Timeout de conexión con Apps Script."));
       }, timeoutMs);
 
-      var query = new URLSearchParams(Object.assign({}, params, { callback: callbackName }));
+      var authToken = getAuthToken();
+      var enrichedParams = Object.assign({}, params);
+      if (authToken && !enrichedParams.authToken && !enrichedParams.token && enrichedParams.accion !== "login") {
+        enrichedParams.authToken = authToken;
+      }
+      var query = new URLSearchParams(Object.assign({}, enrichedParams, { callback: callbackName }));
       scriptTag.src = scriptUrl + "?" + query.toString();
       scriptTag.async = true;
       scriptTag.onerror = function () {

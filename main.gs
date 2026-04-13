@@ -28,6 +28,16 @@ function routeAction(params, callback) {
     return ResponseService.error("No se especificó ninguna acción.", 400, callback);
   }
 
+  // Requerir autenticación para todas las acciones excepto login.
+  if (accion !== "login") {
+    var authToken = (params && (params.authToken || params.token)) ? String(params.authToken || params.token) : "";
+    var session = SessionService.get(authToken);
+    if (!session) {
+      return ResponseService.error("No autorizado. Inicie sesión nuevamente.", 401, callback);
+    }
+    // Si se necesita, session.rol/session.usuario están disponibles aquí.
+  }
+
   switch (accion) {
     case "login":
       return AuthController.login(params, callback);

@@ -13,7 +13,7 @@
   }
 
   function requireSession() {
-    if (!sessionStorage.getItem("cousyUsuario")) {
+    if (!sessionStorage.getItem("cousyAuthToken")) {
       window.location.replace(resolvePath("index.html"));
       return false;
     }
@@ -24,6 +24,7 @@
     try {
       sessionStorage.removeItem("cousyUsuario");
       sessionStorage.removeItem("cousyRol");
+      sessionStorage.removeItem("cousyAuthToken");
     } catch (_) {}
 
     window.location.replace(resolvePath("index.html"));

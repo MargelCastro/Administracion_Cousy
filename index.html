@@ -67,53 +67,11 @@
     </section>
   </main>
 
+  <script src="./js/config.js"></script>
+  <script src="./js/shared/appScriptClient.js"></script>
   <script src="./js/theme.js"></script>
   <script>
     window.AppTheme.initStandaloneThemeButton();
-
-    function loginViaJsonp(scriptURL, usuario, clave, timeoutMs = 10000) {
-      return new Promise((resolve, reject) => {
-        const callbackName = "jsonpLogin_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
-        const scriptTag = document.createElement("script");
-        let timer = null;
-
-        const cleanup = () => {
-          if (timer) clearTimeout(timer);
-          if (scriptTag.parentNode) scriptTag.parentNode.removeChild(scriptTag);
-          try {
-            delete window[callbackName];
-          } catch (_) {
-            window[callbackName] = undefined;
-          }
-        };
-
-        window[callbackName] = (data) => {
-          cleanup();
-          resolve(data);
-        };
-
-        timer = setTimeout(() => {
-          cleanup();
-          reject(new Error("Timeout de JSONP al autenticar."));
-        }, timeoutMs);
-
-        const query = new URLSearchParams({
-          accion: "login",
-          usuario: usuario,
-          password: clave,
-          callback: callbackName
-        });
-
-        scriptTag.src = `${scriptURL}?${query.toString()}`;
-        scriptTag.async = true;
-        scriptTag.onerror = () => {
-          cleanup();
-          reject(new Error("No se pudo cargar el script remoto de autenticación."));
-        };
-
-        document.body.appendChild(scriptTag);
-      });
-    }
 
     function manejarResultadoLogin(data, usuarioFallback) {
       const estado = document.getElementById("estado");
@@ -125,6 +83,7 @@
         try {
           sessionStorage.setItem("cousyUsuario", data.usuario || usuarioFallback);
           sessionStorage.setItem("cousyRol", data.rol || "N/D");
+          if (data.token) sessionStorage.setItem("cousyAuthToken", data.token);
         } catch (_) { }
 
         setTimeout(() => {
@@ -156,9 +115,11 @@
       estado.classList.remove("hidden");
 
       try {
-        const scriptURL = "https://script.google.com/macros/s/AKfycbzKrfl7_XumwDQCXm2gdEu7GQXFAAsQRg6ISIqw4_wVEs86_2nzz4EyNS1psJHwm3YS6A/exec";
-        const data = await loginViaJsonp(scriptURL, usuario, clave);
-        console.log("Servidor respondió (JSONP):", data);
+        const data = await window.AppScriptClient.jsonpRequest({
+          accion: "login",
+          usuario: usuario,
+          password: clave
+        }, { callbackPrefix: "cbLogin", timeoutMs: 10000 });
         manejarResultadoLogin(data, usuario);
       } catch (error) {
         console.error("Fallo de autenticación remota:", error);
