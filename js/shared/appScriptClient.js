@@ -5,12 +5,35 @@
       : "";
   }
 
+  function getRootPrefix() {
+    var path = window.location.pathname.replace(/\\/g, "/");
+    return path.includes("/html/") ? "../" : "./";
+  }
+
+  function getLoginUrl() {
+    return getRootPrefix() + "index.html";
+  }
+
   function getAuthToken() {
     try {
       return sessionStorage.getItem("cousyAuthToken") || "";
     } catch (_) {
       return "";
     }
+  }
+
+  function clearAuthToken() {
+    try {
+      sessionStorage.removeItem("cousyAuthToken");
+      sessionStorage.removeItem("cousyUsuario");
+      sessionStorage.removeItem("cousyRol");
+    } catch (_) {}
+  }
+
+  function isUnauthorizedResponse(data) {
+    if (!data || data.success !== false) return false;
+    var code = data.code;
+    return code === 401 || code === "401";
   }
 
   function jsonpRequest(params, options) {
@@ -41,6 +64,12 @@
 
       window[callbackName] = function (data) {
         cleanup();
+        if (isUnauthorizedResponse(data) && (!params || params.accion !== "login")) {
+          clearAuthToken();
+          window.location.replace(getLoginUrl());
+          reject(new Error("Sesión expirada. Inicie sesión nuevamente."));
+          return;
+        }
         resolve(data);
       };
 
