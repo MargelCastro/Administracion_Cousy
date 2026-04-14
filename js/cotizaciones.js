@@ -4,6 +4,7 @@ function renderCotizacionDraft() {
   var listWrap = document.getElementById("cotizacionListaWrap");
   var list = document.getElementById("cotizacionProductosList");
   var badge = document.getElementById("cotizacionCountBadge");
+  var cantidadBadge = document.getElementById("cotizacionCantidadProductosBadge");
 
   if (!emptyState || !listWrap || !list || !badge) return;
 
@@ -121,6 +122,9 @@ function renderCotizacionDraft() {
         input.getAttribute("data-cotizacion-cantidad"),
         input.value
       );
+      if (typeof window.CotizacionForm !== "undefined" && window.CotizacionForm && window.CotizacionForm.update) {
+        window.CotizacionForm.update();
+      }
     });
   });
 
@@ -128,8 +132,148 @@ function renderCotizacionDraft() {
     button.addEventListener("click", function () {
       window.CotizacionDraft.removeProducto(button.getAttribute("data-cotizacion-remove"));
       renderCotizacionDraft();
+      if (typeof window.CotizacionForm !== "undefined" && window.CotizacionForm && window.CotizacionForm.update) {
+        window.CotizacionForm.update();
+      }
     });
   });
+
+  if (cantidadBadge) {
+    var totalUnidades = productos.reduce(function (acc, producto) {
+      var raw = producto && producto.cantidadCotizar !== undefined ? String(producto.cantidadCotizar) : "";
+      var value = parseFloat(raw.replace(",", "."));
+      return acc + (isFinite(value) && value > 0 ? value : 0);
+    }, 0);
+    cantidadBadge.textContent = totalUnidades + (totalUnidades === 1 ? " unidad" : " unidades");
+  }
+}
+
+function initCotizacionForm() {
+  var form = document.getElementById("cotizacionForm");
+  if (!form) return;
+
+  function byId(id) {
+    return document.getElementById(id);
+  }
+
+  function toNumber(value) {
+    if (value === null || value === undefined) return 0;
+    var raw = String(value).trim();
+    if (!raw) return 0;
+    raw = raw.replace(/[^0-9,.\-]/g, "").replace(",", ".");
+    var parsed = parseFloat(raw);
+    return isFinite(parsed) ? parsed : 0;
+  }
+
+  function setValue(id, value) {
+    var el = byId(id);
+    if (!el) return;
+    el.value = String(value);
+  }
+
+  function round2(n) {
+    return Math.round((Number(n) || 0) * 100) / 100;
+  }
+
+  function calcLaborTotal(prefix, totalId) {
+    var personas = toNumber(byId(prefix + "Personas") && byId(prefix + "Personas").value);
+    var precioDia = toNumber(byId(prefix + "PrecioDia") && byId(prefix + "PrecioDia").value);
+    var dias = toNumber(byId(prefix + "Dias") && byId(prefix + "Dias").value);
+    var total = round2(personas * precioDia * dias);
+    setValue(totalId, total);
+    return total;
+  }
+
+  function sumProductoUnidades() {
+    if (!window.CotizacionDraft || !window.CotizacionDraft.read) return 0;
+    var productos = window.CotizacionDraft.read() || [];
+    return productos.reduce(function (acc, producto) {
+      var raw = producto && producto.cantidadCotizar !== undefined ? String(producto.cantidadCotizar) : "";
+      var value = parseFloat(raw.replace(",", "."));
+      return acc + (isFinite(value) && value > 0 ? value : 0);
+    }, 0);
+  }
+
+  function updateCotizacionId() {
+    var el = byId("cotizacionId");
+    if (!el) return;
+
+    var clienteEl = byId("cotizacionCliente");
+    var cliente = clienteEl ? String(clienteEl.value || "").trim() : "";
+
+    var letters = cliente
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z]/g, "")
+      .toUpperCase();
+
+    var prefix = (letters + "XXX").slice(0, 3);
+
+    var now = new Date();
+    var pad = function (n) { return String(n).padStart(2, "0"); };
+    var stamp = String(now.getFullYear()) + pad(now.getMonth() + 1) + pad(now.getDate());
+
+    el.value = "COT" + prefix + stamp;
+  }
+
+  function update() {
+    updateCotizacionId();
+
+    var moCorte = calcLaborTotal("moCorte", "moCorteTotal");
+    var moConf = calcLaborTotal("moConf", "moConfTotal");
+    var moTotal = round2(moCorte + moConf);
+    setValue("moTotal", moTotal);
+
+    var perVinil = calcLaborTotal("perVinil", "perVinilTotal");
+    var perPlancha = calcLaborTotal("perPlancha", "perPlanchaTotal");
+    var perTotal = round2(perVinil + perPlancha);
+    setValue("perTotal", perTotal);
+
+    var gastos = [
+      "gastoComision",
+      "gastoDelivery",
+      "gastoEmpaque",
+      "gastoSerigrafia",
+      "gastoOtro1",
+      "gastoOtro2",
+      "gastoOtro3"
+    ].reduce(function (acc, id) {
+      var el = byId(id);
+      return acc + toNumber(el && el.value);
+    }, 0);
+    gastos = round2(gastos);
+    setValue("gastosTotal", gastos);
+
+    var costoTotal = round2(moTotal + perTotal + gastos);
+    setValue("negocioCostoTotal", costoTotal);
+
+    var unidades = sumProductoUnidades();
+    var costoUnitario = unidades > 0 ? round2(costoTotal / unidades) : 0;
+    setValue("negocioCostoUnitario", costoUnitario);
+
+    var margenPct = toNumber(byId("negocioMargen") && byId("negocioMargen").value);
+    if (margenPct < 0) margenPct = 0;
+    if (margenPct > 95) margenPct = 95;
+    setValue("negocioMargen", round2(margenPct));
+
+    var margen = margenPct / 100;
+    var divisor = 1 - margen;
+    var precioUnitario = divisor > 0 ? round2(costoUnitario / divisor) : 0;
+    setValue("negocioCostoDivMargen", precioUnitario);
+    setValue("negocioPrecioUnitario", precioUnitario);
+    setValue("negocioPrecioGeneral", round2(precioUnitario * unidades));
+
+    var badge = document.getElementById("cotizacionCantidadProductosBadge");
+    if (badge) badge.textContent = unidades + (unidades === 1 ? " unidad" : " unidades");
+  }
+
+  form.querySelectorAll("input, textarea, select").forEach(function (el) {
+    el.addEventListener("input", update);
+    el.addEventListener("change", update);
+  });
+
+  window.CotizacionForm = { update: update };
+  update();
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -171,4 +315,5 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   renderCotizacionDraft();
+  initCotizacionForm();
 });

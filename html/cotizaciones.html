@@ -78,6 +78,280 @@
           <ul id="cotizacionProductosList" class="space-y-3"></ul>
         </div>
       </section>
+
+      <section class="rounded-2xl border border-slate-800 bg-slate-900 p-4 md:p-6">
+        <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h3 class="text-lg font-semibold text-slate-200">Detalle de cotización</h3>
+            <p class="text-sm text-slate-500">Completa costos y datos del cliente. Los totales se calculan automáticamente.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 text-xs">
+            <span class="rounded-md border border-slate-700 bg-slate-800 px-2 py-1 text-slate-300">Moneda: C$</span>
+            <span id="cotizacionCantidadProductosBadge" class="rounded-md border border-slate-700 bg-slate-800 px-2 py-1 text-slate-300">0 unidades</span>
+          </div>
+        </div>
+
+        <form id="cotizacionForm" class="space-y-6" autocomplete="off">
+          <fieldset class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 md:p-5">
+            <legend class="px-2 text-xs font-semibold uppercase tracking-wider text-emerald-400">A. Información del cliente</legend>
+            <div class="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <label class="space-y-2">
+                <span class="text-sm text-slate-500">ID de cotización (automático)</span>
+                <input id="cotizacionId" type="text" readonly
+                  class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+              </label>
+              <label class="space-y-2">
+                <span class="text-sm text-slate-500">Cliente</span>
+                <input id="cotizacionCliente" type="text" placeholder="Nombre del cliente"
+                  class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 placeholder-slate-500 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+              </label>
+              <label class="space-y-2">
+                <span class="text-sm text-slate-500">RUC</span>
+                <input id="cotizacionRuc" type="text" placeholder="RUC"
+                  class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 placeholder-slate-500 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+              </label>
+              <label class="space-y-2">
+                <span class="text-sm text-slate-500">Teléfono</span>
+                <input id="cotizacionTelefono" type="tel" placeholder="####-####"
+                  class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 placeholder-slate-500 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+              </label>
+              <label class="space-y-2">
+                <span class="text-sm text-slate-500">Persona de contacto</span>
+                <input id="cotizacionContacto" type="text" placeholder="Nombre"
+                  class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 placeholder-slate-500 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+              </label>
+              <label class="space-y-2 md:col-span-2 lg:col-span-3">
+                <span class="text-sm text-slate-500">Descripción</span>
+                <textarea id="cotizacionDescripcion" rows="3" placeholder="Notas u observaciones"
+                  class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 placeholder-slate-500 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400"></textarea>
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 md:p-5">
+            <legend class="px-2 text-xs font-semibold uppercase tracking-wider text-emerald-400">B. Mano de obra</legend>
+            <div class="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-2">
+              <div class="rounded-xl border border-slate-800 bg-slate-900 p-4 space-y-3">
+                <h4 class="text-sm font-semibold text-slate-200">1) Corte</h4>
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <label class="space-y-2">
+                    <span class="text-sm text-slate-500">Cantidad de personas</span>
+                    <input id="moCortePersonas" type="number" min="0" step="1" value="0" inputmode="numeric"
+                      class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+                  </label>
+                  <label class="space-y-2">
+                    <span class="text-sm text-slate-500">Precio del día (C$)</span>
+                    <input id="moCortePrecioDia" type="number" min="0" step="0.01" value="0" inputmode="decimal"
+                      class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+                  </label>
+                  <label class="space-y-2">
+                    <span class="text-sm text-slate-500">Cantidad de días</span>
+                    <input id="moCorteDias" type="number" min="0" step="1" value="0" inputmode="numeric"
+                      class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+                  </label>
+                  <label class="space-y-2">
+                    <span class="text-sm text-slate-500">Total (C$)</span>
+                    <input id="moCorteTotal" type="number" readonly value="0" inputmode="decimal"
+                      class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+                  </label>
+                </div>
+              </div>
+
+              <div class="rounded-xl border border-slate-800 bg-slate-900 p-4 space-y-3">
+                <h4 class="text-sm font-semibold text-slate-200">2) Confección</h4>
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <label class="space-y-2">
+                    <span class="text-sm text-slate-500">Cantidad de personas</span>
+                    <input id="moConfPersonas" type="number" min="0" step="1" value="0" inputmode="numeric"
+                      class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+                  </label>
+                  <label class="space-y-2">
+                    <span class="text-sm text-slate-500">Precio del día (C$)</span>
+                    <input id="moConfPrecioDia" type="number" min="0" step="0.01" value="0" inputmode="decimal"
+                      class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+                  </label>
+                  <label class="space-y-2">
+                    <span class="text-sm text-slate-500">Cantidad de días</span>
+                    <input id="moConfDias" type="number" min="0" step="1" value="0" inputmode="numeric"
+                      class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+                  </label>
+                  <label class="space-y-2">
+                    <span class="text-sm text-slate-500">Total (C$)</span>
+                    <input id="moConfTotal" type="number" readonly value="0" inputmode="decimal"
+                      class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div class="rounded-xl border border-slate-800 bg-slate-900 p-4 flex items-center justify-between gap-3">
+                <div>
+                  <p class="text-sm font-semibold text-slate-200">3) Total mano de obra</p>
+                  <p class="text-xs text-slate-500">Suma de Corte + Confección</p>
+                </div>
+                <input id="moTotal" type="number" readonly value="0" inputmode="decimal"
+                  class="w-40 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 text-right focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 md:p-5">
+            <legend class="px-2 text-xs font-semibold uppercase tracking-wider text-emerald-400">C. Personalizado</legend>
+            <div class="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-2">
+              <div class="rounded-xl border border-slate-800 bg-slate-900 p-4 space-y-3">
+                <h4 class="text-sm font-semibold text-slate-200">1) Corte y depilado de vinil</h4>
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <label class="space-y-2">
+                    <span class="text-sm text-slate-500">Cantidad de personas</span>
+                    <input id="perVinilPersonas" type="number" min="0" step="1" value="0" inputmode="numeric"
+                      class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+                  </label>
+                  <label class="space-y-2">
+                    <span class="text-sm text-slate-500">Precio del día (C$)</span>
+                    <input id="perVinilPrecioDia" type="number" min="0" step="0.01" value="0" inputmode="decimal"
+                      class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+                  </label>
+                  <label class="space-y-2">
+                    <span class="text-sm text-slate-500">Cantidad de días</span>
+                    <input id="perVinilDias" type="number" min="0" step="1" value="0" inputmode="numeric"
+                      class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+                  </label>
+                  <label class="space-y-2">
+                    <span class="text-sm text-slate-500">Total (C$)</span>
+                    <input id="perVinilTotal" type="number" readonly value="0" inputmode="decimal"
+                      class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+                  </label>
+                </div>
+              </div>
+
+              <div class="rounded-xl border border-slate-800 bg-slate-900 p-4 space-y-3">
+                <h4 class="text-sm font-semibold text-slate-200">2) Plancha</h4>
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <label class="space-y-2">
+                    <span class="text-sm text-slate-500">Cantidad de personas</span>
+                    <input id="perPlanchaPersonas" type="number" min="0" step="1" value="0" inputmode="numeric"
+                      class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+                  </label>
+                  <label class="space-y-2">
+                    <span class="text-sm text-slate-500">Precio del día (C$)</span>
+                    <input id="perPlanchaPrecioDia" type="number" min="0" step="0.01" value="0" inputmode="decimal"
+                      class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+                  </label>
+                  <label class="space-y-2">
+                    <span class="text-sm text-slate-500">Cantidad de días</span>
+                    <input id="perPlanchaDias" type="number" min="0" step="1" value="0" inputmode="numeric"
+                      class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+                  </label>
+                  <label class="space-y-2">
+                    <span class="text-sm text-slate-500">Total (C$)</span>
+                    <input id="perPlanchaTotal" type="number" readonly value="0" inputmode="decimal"
+                      class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div class="rounded-xl border border-slate-800 bg-slate-900 p-4 flex items-center justify-between gap-3">
+                <div>
+                  <p class="text-sm font-semibold text-slate-200">Total personalizado</p>
+                  <p class="text-xs text-slate-500">Suma de vinil + plancha</p>
+                </div>
+                <input id="perTotal" type="number" readonly value="0" inputmode="decimal"
+                  class="w-40 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 text-right focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 md:p-5">
+            <legend class="px-2 text-xs font-semibold uppercase tracking-wider text-emerald-400">D. Otros gastos</legend>
+            <div class="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <label class="space-y-2">
+                <span class="text-sm text-slate-500">Comisión de vendedor (C$)</span>
+                <input id="gastoComision" type="number" min="0" step="0.01" value="0" inputmode="decimal"
+                  class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+              </label>
+              <label class="space-y-2">
+                <span class="text-sm text-slate-500">Delivery (C$)</span>
+                <input id="gastoDelivery" type="number" min="0" step="0.01" value="0" inputmode="decimal"
+                  class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+              </label>
+              <label class="space-y-2">
+                <span class="text-sm text-slate-500">Empaque (C$)</span>
+                <input id="gastoEmpaque" type="number" min="0" step="0.01" value="0" inputmode="decimal"
+                  class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+              </label>
+              <label class="space-y-2">
+                <span class="text-sm text-slate-500">Serigrafía (C$)</span>
+                <input id="gastoSerigrafia" type="number" min="0" step="0.01" value="0" inputmode="decimal"
+                  class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+              </label>
+              <label class="space-y-2">
+                <span class="text-sm text-slate-500">Otro 1 (C$)</span>
+                <input id="gastoOtro1" type="number" min="0" step="0.01" value="0" inputmode="decimal"
+                  class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+              </label>
+              <label class="space-y-2">
+                <span class="text-sm text-slate-500">Otro 2 (C$)</span>
+                <input id="gastoOtro2" type="number" min="0" step="0.01" value="0" inputmode="decimal"
+                  class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+              </label>
+              <label class="space-y-2">
+                <span class="text-sm text-slate-500">Otro 3 (C$)</span>
+                <input id="gastoOtro3" type="number" min="0" step="0.01" value="0" inputmode="decimal"
+                  class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+              </label>
+              <div class="md:col-span-2 lg:col-span-2 rounded-xl border border-slate-800 bg-slate-900 p-4 flex items-center justify-between gap-3">
+                <div>
+                  <p class="text-sm font-semibold text-slate-200">Total de gastos variables</p>
+                  <p class="text-xs text-slate-500">Suma de todos los gastos</p>
+                </div>
+                <input id="gastosTotal" type="number" readonly value="0" inputmode="decimal"
+                  class="w-40 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 text-right focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 md:p-5">
+            <legend class="px-2 text-xs font-semibold uppercase tracking-wider text-emerald-400">E. Negocio</legend>
+            <div class="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <label class="space-y-2">
+                <span class="text-sm text-slate-500">Costo total (C$)</span>
+                <input id="negocioCostoTotal" type="number" readonly value="0" inputmode="decimal"
+                  class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+              </label>
+              <label class="space-y-2">
+                <span class="text-sm text-slate-500">Costo unitario (C$)</span>
+                <input id="negocioCostoUnitario" type="number" readonly value="0" inputmode="decimal"
+                  class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+              </label>
+              <label class="space-y-2">
+                <span class="text-sm text-slate-500">Margen de ganancia (%)</span>
+                <input id="negocioMargen" type="number" min="0" max="95" step="0.01" value="0" inputmode="decimal"
+                  class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+              </label>
+              <label class="space-y-2">
+                <span class="text-sm text-slate-500">Costo / (1 - margen) (C$)</span>
+                <input id="negocioCostoDivMargen" type="number" readonly value="0" inputmode="decimal"
+                  class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+              </label>
+              <label class="space-y-2">
+                <span class="text-sm text-slate-500">Precio total unidad (C$)</span>
+                <input id="negocioPrecioUnitario" type="number" readonly value="0" inputmode="decimal"
+                  class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+              </label>
+              <label class="space-y-2">
+                <span class="text-sm text-slate-500">Precio total general (C$)</span>
+                <input id="negocioPrecioGeneral" type="number" readonly value="0" inputmode="decimal"
+                  class="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+              </label>
+            </div>
+          </fieldset>
+
+          <p id="cotizacionFormEstado" class="hidden text-xs px-2 py-1 rounded-md border"></p>
+        </form>
+      </section>
     </div>
   </template>
 
