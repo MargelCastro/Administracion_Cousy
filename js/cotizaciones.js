@@ -854,13 +854,13 @@ document.addEventListener("DOMContentLoaded", function () {
     headerTitle: "Cotizaciones",
     activeNavId: "cotizaciones",
     navItems: [
-      { id: "cotizaciones", label: "Cotizaciones", href: "/html/cotizaciones.html" },
-      { id: "productos", label: "Productos", href: "/html/Producto.html" },
-      { id: "materia-prima", label: "Materia Prima Actual", href: "/html/materiaprima.html" },
-      { id: "clientes", label: "Clientes", href: "/html/clientes.html" },
-      { id: "receta_producto", label: "Receta de Producto", href: "/html/receta_de_Producto.html" },
-      { id: "prod_cotizacion", label: "Productos de Cotización", href: "/html/productos_cotizacion.html" },
-      { id: "mp_cotizacion", label: "Materia Prima de Cotización", href: "/html/materiaprima_cotizacion.html" }
+      { id: "cotizaciones", label: "Cotizaciones", href: "html/cotizaciones.html" },
+      { id: "productos", label: "Productos", href: "html/Producto.html" },
+      { id: "materia-prima", label: "Materia Prima Actual", href: "html/materiaprima.html" },
+      { id: "clientes", label: "Clientes", href: "html/clientes.html" },
+      { id: "receta_producto", label: "Receta de Producto", href: "html/receta_de_Producto.html" },
+      { id: "prod_cotizacion", label: "Productos de Cotización", href: "html/productos_cotizacion.html" },
+      { id: "mp_cotizacion", label: "Materia Prima de Cotización", href: "html/materiaprima_cotizacion.html" }
     ],
     mainContentHtml: mainContentHtml
   });
@@ -872,13 +872,13 @@ document.addEventListener("DOMContentLoaded", function () {
   if (nuevaCotizacionBtn) {
     nuevaCotizacionBtn.addEventListener("click", function () {
       window.CotizacionDraft.clear();
-      window.location.href = "/html/Producto.html";
+      window.location.href = window.AppLayout.resolvePath("html/Producto.html");
     });
   }
 
   if (agregarProductoBtn) {
     agregarProductoBtn.addEventListener("click", function () {
-      window.location.href = "/html/Producto.html";
+      window.location.href = window.AppLayout.resolvePath("html/Producto.html");
     });
   }
 

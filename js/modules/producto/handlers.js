@@ -50,7 +50,7 @@
         });
 
         window.CotizacionDraft.write(productosSeleccionados);
-        window.location.href = "/html/cotizaciones.html";
+        window.location.href = window.AppLayout.resolvePath("html/cotizaciones.html");
       });
     }
   }
