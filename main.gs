@@ -48,6 +48,9 @@ function routeAction(params, callback) {
       if (typeof RecetaProductoController !== "undefined" && RecetaProductoController.esAccionRecetaProducto(accion)) {
         return RecetaProductoController.manejarAccion(accion, params, callback);
       }
+      if (typeof TarifasController !== "undefined" && TarifasController.esAccionTarifas(accion)) {
+        return TarifasController.manejarAccion(accion, params, callback);
+      }
       return ResponseService.error("Acción no reconocida.", 400, callback);
   }
 }

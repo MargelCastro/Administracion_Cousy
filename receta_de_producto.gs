@@ -4,12 +4,14 @@
 var RecetaProductoController = {
   ACTIONS: {
     MATERIALES: "recetaProductoMateriales",
+    DETALLE: "recetaProductoDetalle",
     GUARDAR: "recetaProductoGuardar",
     LISTAR_PRODUCTOS: "productoListar"
   },
 
   esAccionRecetaProducto: function(accion) {
     return accion === this.ACTIONS.MATERIALES ||
+      accion === this.ACTIONS.DETALLE ||
       accion === this.ACTIONS.GUARDAR ||
       accion === this.ACTIONS.LISTAR_PRODUCTOS;
   },
@@ -18,6 +20,8 @@ var RecetaProductoController = {
     switch (accion) {
       case this.ACTIONS.MATERIALES:
         return RecetaProductoService.obtenerMateriales(callback);
+      case this.ACTIONS.DETALLE:
+        return RecetaProductoService.obtenerDetalle(params, callback);
       case this.ACTIONS.GUARDAR:
         return RecetaProductoService.guardarReceta(params, callback);
       case this.ACTIONS.LISTAR_PRODUCTOS:
@@ -377,6 +381,76 @@ var RecetaProductoService = {
       return ResponseService.success({ materiales: materiales }, callback);
     } catch (error) {
       return ResponseService.error("Error obteniendo materiales para receta: " + error.message, 500, callback);
+    }
+  },
+
+  obtenerDetalle: function(params, callback) {
+    try {
+      const rawIds = params && params.productoIds ? String(params.productoIds) : "";
+      const productoIds = rawIds.split(",").map(function (id) {
+        return id ? String(id).trim() : "";
+      }).filter(function (id) {
+        return !!id;
+      });
+
+      if (productoIds.length === 0) {
+        return ResponseService.success({ recetas: [] }, callback);
+      }
+
+      const idsSet = {};
+      for (var i = 0; i < productoIds.length; i++) {
+        idsSet[productoIds[i]] = true;
+      }
+
+      const recetaResp = this._sheetByAliasesOrError(this.RECETA_SHEET_NAMES, callback);
+      if (recetaResp.error) return recetaResp.error;
+      const recetaSheet = recetaResp.sheet;
+
+      const lastRow = recetaSheet.getLastRow();
+      if (lastRow < 2) {
+        return ResponseService.success({ recetas: [] }, callback);
+      }
+
+      const materialesMapResp = this._getMaterialesMap(callback);
+      if (materialesMapResp.error) return materialesMapResp.error;
+      const materialesMap = materialesMapResp.map;
+
+      const headerMap = this._getHeaderMap(recetaSheet);
+      const rows = recetaSheet.getRange(2, 1, lastRow - 1, Math.max(recetaSheet.getLastColumn(), 5)).getValues();
+      const recetas = [];
+
+      for (var r = 0; r < rows.length; r++) {
+        const row = rows[r];
+        const idProductoRaw = this._columnValue(row, headerMap, ["id_producto", "id producto"], 0);
+        const idProducto = idProductoRaw ? String(idProductoRaw).trim() : "";
+        if (!idProducto || !idsSet[idProducto]) continue;
+
+        const idMaterialRaw = this._columnValue(row, headerMap, ["id_material", "id material"], 1);
+        const idMaterial = idMaterialRaw ? String(idMaterialRaw).trim() : "";
+        if (!idMaterial) continue;
+
+        const materialBase = materialesMap[idMaterial];
+        if (!materialBase || materialBase.activo !== true) continue;
+
+        const cantidadTotal = this._round3(this._columnValue(row, headerMap, ["cantidad_total", "cantidad total"], 4));
+        const cantidadPorUnidad = this._round3(this._columnValue(row, headerMap, ["cantidad_por_unidad", "cantidad por unidad"], 2));
+        const porcentajeDesperdicio = this._round3(this._columnValue(row, headerMap, ["porcentaje_desperdicio", "porcentaje desperdicio"], 3));
+
+        recetas.push({
+          idProducto: idProducto,
+          idMaterial: idMaterial,
+          cantidadTotal: cantidadTotal,
+          cantidadPorUnidad: cantidadPorUnidad,
+          porcentajeDesperdicio: porcentajeDesperdicio,
+          nombreMaterial: materialBase.nombreMaterial,
+          unidadBase: materialBase.unidadBase,
+          precio: materialBase.precio
+        });
+      }
+
+      return ResponseService.success({ recetas: recetas }, callback);
+    } catch (error) {
+      return ResponseService.error("Error obteniendo detalle de receta: " + error.message, 500, callback);
     }
   },
 
