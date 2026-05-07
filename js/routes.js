@@ -5,7 +5,8 @@ const ROUTES = Object.freeze({
   materiaPrimaCotizacion: "html/materiaprima_cotizacion.html",
   materiaPrima: "html/materiaprima.html",
   producto: "html/Producto.html",
-  recetaProducto: "html/receta_de_Producto.html"
+  recetaProducto: "html/receta_de_Producto.html",
+  control: "html/control.html"
 });
 
 function resolveRoute(path) {
@@ -52,6 +53,10 @@ function goToRecetaProducto() {
   navigateToRoute("recetaProducto");
 }
 
+function goToControl() {
+  navigateToRoute("control");
+}
+
 window.AppRoutes = {
   ROUTES: ROUTES,
   resolve: resolveRoute,
@@ -63,5 +68,6 @@ window.AppRoutes = {
   goToMateriaPrimaCotizacion: goToMateriaPrimaCotizacion,
   goToMateriaPrima: goToMateriaPrima,
   goToProducto: goToProducto,
-  goToRecetaProducto: goToRecetaProducto
+  goToRecetaProducto: goToRecetaProducto,
+  goToControl: goToControl
 };

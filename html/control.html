@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Ventas vs Gastos</title>
+
+  <!-- ICONOS -->
+  <link rel="icon" type="image/x-icon" href="../img/favicon.ico">
+  <link rel="apple-touch-icon" href="../img/logo-cousy.png">
+
+  <!-- COLOR APP -->
+  <meta name="theme-color" content="#ec1665">
+
+  <!-- MOBILE -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <!-- TAILWIND -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- CHART -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --cousy-pink: #ec1665;
+      --cousy-green: #73a35a;
+      --cousy-light-pink: #f698ac;
+      --cousy-light-green: #addc9e;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen bg-[#fff8fa] text-neutral-900">
+
+  <main class="min-h-screen flex items-center justify-center px-4 py-6">
+
+    <!-- LOGIN -->
+    <section id="loginView" class="w-full max-w-sm">
+
+      <div class="bg-white rounded-3xl shadow-sm border border-[#f4d2dc] p-6 sm:p-8">
+
+        <div class="mb-8 text-center">
+
+          <div class="flex justify-center mb-4">
+            <div class="w-16 h-16 rounded-full overflow-hidden shadow-sm border border-[#f4d2dc]">
+              <img src="../img/logo-cousy.png" alt="Cousy" class="w-full h-full object-cover" />
+            </div>
+          </div>
+
+          <h1 class="text-2xl font-semibold tracking-tight text-[#ec1665]">
+            Ventas vs Gastos
+          </h1>
+
+          <p class="text-sm text-neutral-500 mt-2">
+            Iniciá sesión para continuar
+          </p>
+
+        </div>
+
+        <form id="loginForm" class="space-y-4">
+
+          <div>
+            <label class="block text-sm font-medium text-neutral-700 mb-1">
+              Usuario
+            </label>
+
+            <input id="usuario" type="text" required autocomplete="username"
+              class="w-full rounded-2xl border border-[#f1cad6] bg-white px-4 py-3 outline-none transition focus:border-[#ec1665]" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-neutral-700 mb-1">
+              Contraseña
+            </label>
+
+            <input id="password" type="password" required autocomplete="current-password"
+              class="w-full rounded-2xl border border-[#f1cad6] bg-white px-4 py-3 outline-none transition focus:border-[#ec1665]" />
+          </div>
+
+          <button type="submit"
+            class="w-full rounded-2xl bg-[#ec1665] px-4 py-3 text-white font-medium transition hover:bg-[#cf0f57]">
+            Entrar
+          </button>
+
+        </form>
+
+        <p id="loginMensaje" class="mt-4 text-center text-sm font-medium"></p>
+
+      </div>
+
+    </section>
+
+    <!-- APP -->
+    <section id="appView" class="hidden w-full max-w-5xl">
+
+      <div class="bg-white rounded-3xl shadow-sm border border-[#f4d2dc] p-5 sm:p-8">
+
+        <!-- HEADER -->
+        <header class="flex flex-col items-center justify-center gap-6 mb-8 text-center">
+
+          <div class="flex flex-col items-center justify-center">
+
+            <div class="flex items-center justify-center gap-3 mb-2">
+
+              <div class="w-16 h-16 rounded-full overflow-hidden shadow-sm border border-[#f4d2dc]">
+                <img src="../img/logo-cousy.png" alt="Cousy" class="w-full h-full object-cover" />
+              </div>
+
+              <div>
+
+                <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight text-[#ec1665]">
+                  Registro
+                </h1>
+
+                <p id="usuarioActivo" class="text-sm text-neutral-500 mt-1"></p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <button onclick="cerrarSesion()"
+            class="rounded-2xl border border-[#ec1665] px-5 py-2 text-sm font-medium text-[#ec1665] transition hover:bg-[#f698ac]/20">
+            Salir
+          </button>
+
+        </header>
+
+        <!-- FORM -->
+        <form id="registroForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <!-- TIPO -->
+          <div>
+
+            <label class="block text-sm font-medium text-neutral-700 mb-1">
+              Tipo
+            </label>
+
+            <div class="relative">
+
+              <button type="button" id="selectButton"
+                class="w-full rounded-2xl border border-[#f1cad6] bg-white px-4 py-3 text-left outline-none transition focus:border-[#ec1665]">
+                Venta
+              </button>
+
+              <div id="selectMenu"
+                class="hidden absolute z-50 mt-2 w-full overflow-hidden rounded-2xl border border-[#f1cad6] bg-white shadow-lg">
+
+                <button type="button" data-value="venta"
+                  class="dropdown-option w-full px-4 py-3 text-left hover:bg-[#fff1f5]">
+                  Venta
+                </button>
+
+                <button type="button" data-value="gasto"
+                  class="dropdown-option w-full px-4 py-3 text-left hover:bg-[#fff1f5]">
+                  Gasto
+                </button>
+
+                <button type="button" data-value="gasto_personal"
+                  class="dropdown-option w-full px-4 py-3 text-left hover:bg-[#fff1f5]">
+                  Gasto personal
+                </button>
+
+              </div>
+
+              <input type="hidden" id="tipo" value="venta">
+
+            </div>
+
+          </div>
+
+          <!-- FECHA -->
+          <div>
+
+            <label class="block text-sm font-medium text-neutral-700 mb-1">
+              Fecha
+            </label>
+
+            <input id="fecha" type="date" required
+              class="w-full rounded-2xl border border-[#f1cad6] bg-white px-4 py-3 outline-none transition focus:border-[#ec1665]" />
+
+          </div>
+
+          <!-- CLIENTE -->
+          <div id="clienteBox" class="md:col-span-2">
+
+            <label class="block text-sm font-medium text-neutral-700 mb-1">
+              Cliente
+            </label>
+
+            <input id="cliente" type="text" placeholder="Nombre del cliente"
+              class="w-full rounded-2xl border border-[#f1cad6] bg-white px-4 py-3 outline-none transition focus:border-[#ec1665]" />
+
+          </div>
+
+          <!-- DESCRIPCION -->
+          <div class="md:col-span-2">
+
+            <label class="block text-sm font-medium text-neutral-700 mb-1">
+              Descripción
+            </label>
+
+            <textarea id="descripcion" required rows="4" placeholder="Detalle del registro"
+              class="w-full resize-none rounded-2xl border border-[#f1cad6] bg-white px-4 py-3 outline-none transition focus:border-[#ec1665]"></textarea>
+
+          </div>
+
+          <!-- MONTO -->
+          <div class="md:col-span-2">
+
+            <label class="block text-sm font-medium text-neutral-700 mb-1">
+              Monto
+            </label>
+
+            <input id="monto" type="number" step="0.01" min="0" required placeholder="0.00"
+              class="w-full rounded-2xl border border-[#f1cad6] bg-white px-4 py-3 outline-none transition focus:border-[#ec1665]" />
+
+          </div>
+
+          <!-- BOTONES -->
+          <div class="md:col-span-2 space-y-3">
+
+            <button type="submit"
+              class="w-full rounded-2xl bg-[#73a35a] px-4 py-3 text-white font-medium transition hover:bg-[#628c4c]">
+              Guardar registro
+            </button>
+
+            <button type="button" onclick="mostrarDashboard()"
+              class="w-full rounded-2xl border border-[#ec1665] bg-white px-4 py-3 text-[#ec1665] font-medium transition hover:bg-[#fff1f5]">
+              Ver resumen gráfico
+            </button>
+
+          </div>
+
+        </form>
+
+        <p id="mensaje" class="mt-4 text-center text-sm font-medium"></p>
+
+      </div>
+
+    </section>
+
+    <!-- DASHBOARD -->
+    <section id="dashboardView" class="hidden w-full max-w-5xl">
+
+      <div class="bg-white rounded-3xl shadow-sm border border-[#f4d2dc] p-5 sm:p-8">
+
+        <header class="text-center mb-8">
+
+          <div class="flex justify-center mb-4">
+
+            <div class="w-16 h-16 rounded-full overflow-hidden shadow-sm border border-[#f4d2dc]">
+              <img src="../img/logo-cousy.png" alt="Cousy" class="w-full h-full object-cover" />
+            </div>
+
+          </div>
+
+          <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight text-[#ec1665]">
+            Resumen mensual
+          </h1>
+
+          <p class="text-sm text-neutral-500 mt-2">
+            Ventas, gastos, gastos personales y utilidad
+          </p>
+
+        </header>
+
+        <div class="h-96 rounded-3xl border border-[#f4d2dc] bg-white p-4">
+          <canvas id="resumenChart"></canvas>
+        </div>
+
+        <p id="errorGrafico" class="mt-4 text-center text-sm text-red-600"></p>
+
+        <button onclick="mostrarFormulario()"
+          class="mt-6 w-full rounded-2xl bg-[#ec1665] px-4 py-3 text-white font-medium transition hover:bg-[#cf0f57]">
+          Volver al formulario
+        </button>
+
+      </div>
+
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+
+        <div class="h-80 rounded-3xl border border-[#f4d2dc] bg-white p-4">
+          <h2 class="text-center text-lg font-semibold text-[#ec1665] mb-8">
+            Gastos más altos
+          </h2>
+          <canvas id="gastosPieChart"></canvas>
+        </div>
+
+        <div class="h-80 rounded-3xl border border-[#f4d2dc] bg-whitemt-6 p-4">
+          <h2 class="text-center text-lg font-semibold text-[#ec1665] mb-4">
+            Clientes que más compraron
+          </h2>
+          <canvas id="clientesPieChart"></canvas>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <script>
+
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxsKfsQ--Y1h4ub-o3hoT6lladiHt389M6O4xgyHvS68XwAWchQI4DJ3qMfZ_4NotfuXQ/exec";
+
+    const loginView = document.getElementById("loginView");
+    const appView = document.getElementById("appView");
+    const dashboardView = document.getElementById("dashboardView");
+
+    const tipo = document.getElementById("tipo");
+    const fecha = document.getElementById("fecha");
+    const clienteBox = document.getElementById("clienteBox");
+
+    let resumenChart = null;
+    let gastosPieChart = null;
+    let clientesPieChart = null;
+
+    fecha.valueAsDate = new Date();
+
+    /* =========================
+       LOGIN
+    ========================= */
+
+    const usuarioGuardado =
+      localStorage.getItem("usuarioVentasGastos");
+
+    if (usuarioGuardado) {
+      mostrarApp(usuarioGuardado);
+    }
+
+    document.getElementById("loginForm")
+      .addEventListener("submit", async function (e) {
+
+        e.preventDefault();
+
+        const loginMensaje =
+          document.getElementById("loginMensaje");
+
+        const datos = {
+          action: "login",
+          usuario: document.getElementById("usuario").value.trim(),
+          password: document.getElementById("password").value.trim()
+        };
+
+        try {
+
+          const res = await fetch(WEB_APP_URL, {
+            method: "POST",
+            body: JSON.stringify(datos)
+          });
+
+          const data = await res.json();
+
+          if (data.success) {
+
+            localStorage.setItem(
+              "usuarioVentasGastos",
+              data.usuario
+            );
+
+            mostrarApp(data.usuario);
+
+          } else {
+
+            loginMensaje.textContent =
+              "Usuario o contraseña incorrectos";
+
+          }
+
+        } catch (error) {
+
+          loginMensaje.textContent =
+            "Error de conexión";
+
+        }
+
+      });
+
+    /* =========================
+       REGISTRO
+    ========================= */
+
+    document.getElementById("registroForm")
+      .addEventListener("submit", async function (e) {
+
+        e.preventDefault();
+
+        const mensaje =
+          document.getElementById("mensaje");
+
+        mensaje.textContent = "Guardando...";
+
+        const tipoValor = tipo.value;
+
+        const datos = {
+          tipo: tipoValor,
+          fecha: document.getElementById("fecha").value,
+          descripcion: document.getElementById("descripcion").value.trim(),
+          monto: document.getElementById("monto").value
+        };
+
+        if (tipoValor === "venta") {
+          datos.cliente =
+            document.getElementById("cliente").value.trim();
+        }
+
+        try {
+
+          const res = await fetch(WEB_APP_URL, {
+            method: "POST",
+            body: JSON.stringify(datos)
+          });
+
+          const data = await res.json();
+
+          if (data.success) {
+
+            mensaje.textContent =
+              "Registro guardado correctamente";
+
+            mensaje.className =
+              "mt-4 text-center text-sm font-medium text-[#73a35a]";
+
+            document.getElementById("registroForm").reset();
+
+            fecha.valueAsDate = new Date();
+
+            actualizarFormulario();
+
+          } else {
+
+            mensaje.textContent =
+              data.error || "No se pudo guardar";
+          }
+
+        } catch (error) {
+
+          mensaje.textContent =
+            "Error al guardar";
+        }
+
+      });
+
+    /* =========================
+       SELECT CUSTOM
+    ========================= */
+
+    const selectButton =
+      document.getElementById("selectButton");
+
+    const selectMenu =
+      document.getElementById("selectMenu");
+
+    selectButton.addEventListener("click", () => {
+      selectMenu.classList.toggle("hidden");
+    });
+
+    document.querySelectorAll(".dropdown-option")
+      .forEach(option => {
+
+        option.addEventListener("click", () => {
+
+          const value = option.dataset.value;
+
+          tipo.value = value;
+
+          selectButton.textContent =
+            option.textContent.trim();
+
+          selectMenu.classList.add("hidden");
+
+          actualizarFormulario();
+        });
+
+      });
+
+    document.addEventListener("click", (e) => {
+
+      if (
+        !selectButton.contains(e.target) &&
+        !selectMenu.contains(e.target)
+      ) {
+
+        selectMenu.classList.add("hidden");
+      }
+
+    });
+
+    /* =========================
+       FORMULARIO
+    ========================= */
+
+    function actualizarFormulario() {
+
+      if (tipo.value === "venta") {
+
+        clienteBox.classList.remove("hidden");
+
+      } else {
+
+        clienteBox.classList.add("hidden");
+
+        document.getElementById("cliente").value = "";
+      }
+    }
+
+    /* =========================
+       DASHBOARD
+    ========================= */
+
+    function mostrarDashboard() {
+
+      appView.classList.add("hidden");
+
+      dashboardView.classList.remove("hidden");
+
+      cargarGraficoResumen();
+    }
+
+    function mostrarFormulario() {
+
+      dashboardView.classList.add("hidden");
+
+      appView.classList.remove("hidden");
+    }
+
+    async function cargarGraficoResumen() {
+      try {
+        const res = await fetch(WEB_APP_URL);
+        const data = await res.json();
+
+        const resumenData = Array.isArray(data) ? data : data.resumen;
+        const gastosAltos = data.gastosAltos || [];
+        const clientesTop = data.clientesTop || [];
+
+        const labels = resumenData.map(item => {
+          const fecha = new Date(item.mes);
+          return fecha.toISOString().slice(0, 7);
+        });
+
+        const ventas = resumenData.map(item => item.ventas);
+        const gastos = resumenData.map(item => item.gastos);
+        const personales = resumenData.map(item => item.personales);
+        const utilidad = resumenData.map(item => item.utilidad);
+
+        if (resumenChart) resumenChart.destroy();
+        if (gastosPieChart) gastosPieChart.destroy();
+        if (clientesPieChart) clientesPieChart.destroy();
+
+        resumenChart = new Chart(document.getElementById("resumenChart"), {
+          type: "bar",
+          data: {
+            labels,
+            datasets: [
+              {
+                label: "Ventas",
+                data: ventas,
+                backgroundColor: "#ec1665",
+                borderRadius: 10
+              },
+              {
+                label: "Gastos",
+                data: gastos,
+                backgroundColor: "#f698ac",
+                borderRadius: 10
+              },
+              {
+                label: "Gastos personales",
+                data: personales,
+                backgroundColor: "#addc9e",
+                borderRadius: 10
+              },
+              {
+                label: "Utilidad",
+                data: utilidad,
+                backgroundColor: utilidad.map(v => v < 0 ? "#dc2626" : "#73a35a"),
+                borderRadius: 10
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: "bottom" }
+            },
+            scales: {
+              y: {
+                beginAtZero: false
+              }
+            }
+          }
+        });
+
+        gastosPieChart = crearGraficoPastel(
+          "gastosPieChart",
+          gastosAltos,
+          "Gastos"
+        );
+
+        clientesPieChart = crearGraficoPastel(
+          "clientesPieChart",
+          clientesTop,
+          "Clientes"
+        );
+
+      } catch (error) {
+        document.getElementById("errorGrafico").textContent =
+          "Error cargando gráfico";
+      }
+    }
+    function crearGraficoPastel(canvasId, data, label) {
+      const canvas = document.getElementById(canvasId);
+
+      if (!canvas || !data || data.length === 0) {
+        return null;
+      }
+
+      return new Chart(canvas, {
+        type: "doughnut",
+        data: {
+          labels: data.map(item => item.nombre),
+          datasets: [
+            {
+              label: label,
+              data: data.map(item => item.monto),
+              backgroundColor: [
+                "#ec1665",
+                "#f698ac",
+                "#73a35a",
+                "#addc9e",
+                "#f97316",
+                "#a855f7"
+              ],
+              borderColor: "#ffffff",
+              borderWidth: 3
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "bottom"
+            }
+          }
+        }
+      });
+    }
+    /* =========================
+       APP
+    ========================= */
+
+    function mostrarApp(usuario) {
+
+      loginView.classList.add("hidden");
+
+      appView.classList.remove("hidden");
+
+      document.getElementById("usuarioActivo")
+        .textContent = "Usuario: " + usuario;
+
+      actualizarFormulario();
+    }
+
+    function cerrarSesion() {
+
+      localStorage.removeItem(
+        "usuarioVentasGastos"
+      );
+
+      location.reload();
+    }
+
+  </script>
+
+</body>
+
+</html>
