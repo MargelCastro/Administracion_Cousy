@@ -1,15 +1,20 @@
 (function () {
-  function getRootPrefix() {
-    const path = window.location.pathname.replace(/\\/g, "/");
-    return path.includes("/html/") ? "../" : "./";
+  function getPathResolver() {
+    if (window.PathResolver && typeof window.PathResolver.resolve === "function") {
+      return window.PathResolver;
+    }
+    return null;
   }
 
   function resolvePath(path) {
+    const resolver = getPathResolver();
+    if (resolver) {
+      return resolver.resolve(path);
+    }
+
     if (!path) return "#";
-    if (/^(https?:)?\/\//.test(path) || path.startsWith("#")) return path;
-    if (path.startsWith("/")) return path;
-    const normalizedPath = path.replace(/^\.\//, "").replace(/^\//, "");
-    return `${getRootPrefix()}${normalizedPath}`;
+    if (/^(https?:)?\/\//.test(path) || path.startsWith("#") || path.startsWith("/")) return path;
+    return "./" + String(path).replace(/^\.\//, "").replace(/^\/+/, "");
   }
 
   function requireSession() {

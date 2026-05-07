@@ -68,10 +68,18 @@
   </main>
 
   <script src="./js/config.js"></script>
+  <script src="./js/shared/pathResolver.js"></script>
   <script src="./js/shared/appScriptClient.js"></script>
   <script src="./js/theme.js"></script>
   <script>
     window.AppTheme.initStandaloneThemeButton();
+
+    function resolveAppPath(path) {
+      if (window.PathResolver && typeof window.PathResolver.resolve === "function") {
+        return window.PathResolver.resolve(path);
+      }
+      return path || "#";
+    }
 
     function manejarResultadoLogin(data, usuarioFallback) {
       const estado = document.getElementById("estado");
@@ -87,7 +95,7 @@
         } catch (_) { }
 
         setTimeout(() => {
-          window.location.assign("html/cotizaciones.html");
+          window.location.assign(resolveAppPath("html/cotizaciones.html"));
         }, 1200);
         return;
       }

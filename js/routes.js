@@ -1,4 +1,4 @@
-const ROUTES = {
+const ROUTES = Object.freeze({
   cotizaciones: "html/cotizaciones.html",
   clientes: "html/clientes.html",
   productosCotizacion: "html/productos_cotizacion.html",
@@ -6,42 +6,62 @@ const ROUTES = {
   materiaPrima: "html/materiaprima.html",
   producto: "html/Producto.html",
   recetaProducto: "html/receta_de_Producto.html"
-};
+});
 
 function resolveRoute(path) {
-  if (window.AppLayout && typeof window.AppLayout.resolvePath === "function") {
-    return window.AppLayout.resolvePath(path);
+  if (window.PathResolver && typeof window.PathResolver.resolve === "function") {
+    return window.PathResolver.resolve(path);
   }
-  var currentPath = window.location.pathname.replace(/\\/g, "/");
-  var prefix = currentPath.includes("/html/") ? "../" : "./";
-  var normalizedPath = String(path || "").replace(/^\.\//, "").replace(/^\//, "");
-  return prefix + normalizedPath;
+  return path || "#";
+}
+
+function navigateTo(path) {
+  window.location.href = resolveRoute(path);
+}
+
+function navigateToRoute(routeKey) {
+  if (!Object.prototype.hasOwnProperty.call(ROUTES, routeKey)) return;
+  navigateTo(ROUTES[routeKey]);
 }
 
 function goToCotizaciones() {
-  window.location.href = resolveRoute(ROUTES.cotizaciones);
+  navigateToRoute("cotizaciones");
 }
 
 function goToClientes() {
-  window.location.href = resolveRoute(ROUTES.clientes);
+  navigateToRoute("clientes");
 }
 
 function goToProductosCotizacion() {
-  window.location.href = resolveRoute(ROUTES.productosCotizacion);
+  navigateToRoute("productosCotizacion");
 }
 
 function goToMateriaPrimaCotizacion() {
-  window.location.href = resolveRoute(ROUTES.materiaPrimaCotizacion);
+  navigateToRoute("materiaPrimaCotizacion");
 }
 
 function goToMateriaPrima() {
-  window.location.href = resolveRoute(ROUTES.materiaPrima);
+  navigateToRoute("materiaPrima");
 }
 
 function goToProducto() {
-  window.location.href = resolveRoute(ROUTES.producto);
+  navigateToRoute("producto");
 }
 
 function goToRecetaProducto() {
-  window.location.href = resolveRoute(ROUTES.recetaProducto);
+  navigateToRoute("recetaProducto");
 }
+
+window.AppRoutes = {
+  ROUTES: ROUTES,
+  resolve: resolveRoute,
+  navigateTo: navigateTo,
+  navigateToRoute: navigateToRoute,
+  goToCotizaciones: goToCotizaciones,
+  goToClientes: goToClientes,
+  goToProductosCotizacion: goToProductosCotizacion,
+  goToMateriaPrimaCotizacion: goToMateriaPrimaCotizacion,
+  goToMateriaPrima: goToMateriaPrima,
+  goToProducto: goToProducto,
+  goToRecetaProducto: goToRecetaProducto
+};

@@ -5,13 +5,19 @@
       : "";
   }
 
-  function getRootPrefix() {
-    var path = window.location.pathname.replace(/\\/g, "/");
-    return path.includes("/html/") ? "../" : "./";
+  function getPathResolver() {
+    if (window.PathResolver && typeof window.PathResolver.toLoginUrl === "function") {
+      return window.PathResolver;
+    }
+    return null;
   }
 
   function getLoginUrl() {
-    return getRootPrefix() + "index.html";
+    var resolver = getPathResolver();
+    if (resolver) {
+      return resolver.toLoginUrl();
+    }
+    return "index.html";
   }
 
   function getAuthToken() {
